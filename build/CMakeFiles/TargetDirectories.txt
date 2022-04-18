@@ -1,0 +1,15 @@
+/home/karl2883/programming/c++/minecraft/build/CMakeFiles/edit_cache.dir
+/home/karl2883/programming/c++/minecraft/build/CMakeFiles/rebuild_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/CMakeFiles/Minecraftlib.dir
+/home/karl2883/programming/c++/minecraft/build/src/CMakeFiles/Minecraft.dir
+/home/karl2883/programming/c++/minecraft/build/src/CMakeFiles/edit_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/CMakeFiles/rebuild_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/gfx/CMakeFiles/Gfx.dir
+/home/karl2883/programming/c++/minecraft/build/src/gfx/CMakeFiles/edit_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/gfx/CMakeFiles/rebuild_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/world/CMakeFiles/World.dir
+/home/karl2883/programming/c++/minecraft/build/src/world/CMakeFiles/edit_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/world/CMakeFiles/rebuild_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/model/CMakeFiles/Model.dir
+/home/karl2883/programming/c++/minecraft/build/src/model/CMakeFiles/edit_cache.dir
+/home/karl2883/programming/c++/minecraft/build/src/model/CMakeFiles/rebuild_cache.dir

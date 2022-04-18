@@ -1,0 +1,2 @@
+/usr/bin/ar qc libMinecraftlib.a CMakeFiles/Minecraftlib.dir/window.cpp.o CMakeFiles/Minecraftlib.dir/Game.cpp.o CMakeFiles/Minecraftlib.dir/Camera.cpp.o CMakeFiles/Minecraftlib.dir/callbacks.cpp.o CMakeFiles/Minecraftlib.dir/debug.cpp.o
+/usr/bin/ranlib libMinecraftlib.a
