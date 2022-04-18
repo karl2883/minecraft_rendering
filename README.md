@@ -4,7 +4,7 @@ I'm just trying to learn opengl and improve my c++ skills
 ## To run:
 0. Be on a unix system
 1. Clone the repository
-2. Make a "build" folder
+2. Make a "build" folder inside of the project folder
 3. Go into that folder
 4. Run "cmake .."
 5. Run "cmake --build ."
