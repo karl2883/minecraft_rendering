@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/Minecraft.dir/main.cpp.o -o Main  /usr/lib/libGLEW.so /usr/lib/libglfw.so.3.3 libMinecraftlib.a gfx/libGfx.a world/libWorld.a model/libModel.a /usr/lib/libGLX.so /usr/lib/libOpenGL.so 

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libWorld.a CMakeFiles/World.dir/Chunk.cpp.o CMakeFiles/World.dir/ChunkMesh.cpp.o CMakeFiles/World.dir/Block.cpp.o
-/usr/bin/ranlib libWorld.a

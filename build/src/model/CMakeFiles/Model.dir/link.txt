@@ -1,2 +1,0 @@
-/usr/bin/ar qc libModel.a CMakeFiles/Model.dir/VertexBuffer.cpp.o CMakeFiles/Model.dir/VertexArray.cpp.o
-/usr/bin/ranlib libModel.a
