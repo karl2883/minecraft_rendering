@@ -1,55 +1,55 @@
 #include "ChunkMesh.h"
 
 std::vector<float> cubeVertices = std::vector<float>({
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
 
-    0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.70,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.70,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.70,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.70,
+    0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.70,
+    0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.70,
 
-    -0.5f, 0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    -0.5f,-0.5f, -0.5f,  0.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, 0.5f, -0.5f,  0.0f, 1.0f, 0.86,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.86,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.86,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.86,
+    -0.5f,-0.5f, -0.5f,  0.0f, 0.0f, 0.86,
+    -0.5f, 0.5f, -0.5f,  0.0f, 1.0f, 0.86,
 
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.86,
+    0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.86,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.86,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.86,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.86,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.86,
 
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.70,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.70,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.70,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.70,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.70,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.70,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f
 });
 
-void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side) {
+void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side, TextureHandler& textureHandler) {
     std::vector<glm::vec2> coords = textureHandler.GetSideCoordinates(side);
 
     for (int i=side*6; i<(side+1)*6; i++) {
         for (int j=0; j<3; j++) {
-            vertices.push_back(cubeVertices[i*5+j]+pos[j]+0.5);
+            vertices.push_back(cubeVertices[i*6+j]+pos[j]+0.5);
         }
         glm::vec2 vertexCoords;
         switch(i-(side*6)) {
@@ -63,14 +63,20 @@ void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side) {
         }
         vertices.push_back(vertexCoords[0]);
         vertices.push_back(vertexCoords[1]);
+        // shading factor so you can differentiate the sides better
+        vertices.push_back(cubeVertices[i*6+5]);
     }
 }
 
 void ChunkMesh::BuildMesh() {
     vbo = VertexBuffer(vertices.data(), vertices.size() * sizeof(float));
     VertexBufferLayout layout {};
+    // coords
     layout.Push<float>(3);
+    // texture coords
     layout.Push<float>(2);
+    // shade factor
+    layout.Push<float>(1);
     vao.AddBuffer(vbo, layout);
 }
 
@@ -79,9 +85,5 @@ VertexArray& ChunkMesh::GetVAO() {
 }
 
 int ChunkMesh::GetVertexCount() const {
-    return vertices.size() / 5;
-}
-
-void ChunkMesh::Reset() {
-    faces.clear();
+    return vertices.size() / 6;
 }

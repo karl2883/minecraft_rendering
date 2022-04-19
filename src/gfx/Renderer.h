@@ -29,7 +29,7 @@ private:
     glm::mat4 projection;
     // camera matrix to transform 3d space to the pov of the camera
     glm::mat4 view;
-    // combination of both that only gets calculated once (or twice) per frame to save computing power
+    // combination of both that only gets calculated once (or twice) per frame on the cpu to save computing power
     glm::mat4 VP;
 
     void UpdateProjection();

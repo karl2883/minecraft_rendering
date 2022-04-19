@@ -5,7 +5,7 @@
 #include "gfx/Renderer.h"
 #include "gfx/Shader.h"
 #include "Camera.h"
-#include "world/Chunk.h"
+#include "world/World.h"
 #include "gfx/TextureHandler.h"
 #include "Camera.h"
 
@@ -25,7 +25,7 @@ private:
 
     Renderer renderer;
 
-    Chunk chunk;
+    World world;
 
     float deltaTime;
     float lastFrame;

@@ -1,20 +1,21 @@
 #include "Chunk.h"
+#include <glm/gtx/string_cast.hpp>
 
-Chunk::Chunk(int x, int y, int z, Renderer& renderer) 
-    :x(x), y(y), z(z), renderer(renderer), mesh(renderer.GetTextureHandler()), model(1.0f)
+Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler) 
+    :pos(xpos), mesh(textureHandler), model(1.0f)
 {
-    glm::translate(model, glm::vec3(x, y, z));
+    model = glm::translate(model, pos);
     Generate();
-    GenerateMesh();
+    GenerateMesh(textureHandler);
 }
 
 void Chunk::Generate() {
-    for (int i=x; i<CHUNK_SIZE_X; i++) {
-        for (int j=y; j<CHUNK_SIZE_Y; j++) {
-            for (int k=z; k<CHUNK_SIZE_Z; k++) {
+    for (int i=0; i<CHUNK_SIZE_X; i++) {
+        for (int j=0; j<CHUNK_SIZE_Y; j++) {
+            for (int k=0; k<CHUNK_SIZE_Z; k++) {
                 BlockType type;
                 // I want a pyramid
-                if (j <= i && j <= k) {
+                if (j <= 7) {
                     type = BlockType::GRASS;
                 } else {
                     type = BlockType::AIR;
@@ -26,20 +27,20 @@ void Chunk::Generate() {
     }
 }
 
-void Chunk::GenerateMesh() {
+void Chunk::GenerateMesh(TextureHandler& textureHandler) {
     Block block;
-    glm::vec3 pos;
-    for (int i=x; i<CHUNK_SIZE_X; i++) {
-        for (int j=y; j<CHUNK_SIZE_Y; j++) {
-            for (int k=z; k<CHUNK_SIZE_Z; k++) {
+    glm::vec3 bpos;
+    for (int i=0; i<CHUNK_SIZE_X; i++) {
+        for (int j=0; j<CHUNK_SIZE_Y; j++) {
+            for (int k=0; k<CHUNK_SIZE_Z; k++) {
                 block = GetBlock(i, j, k);
-                pos.x = i;
-                pos.y = j;
-                pos.z = k;
+                bpos.x = i;
+                bpos.y = j;
+                bpos.z = k;
                 if (block.getBlockType() != BlockType::AIR) {
                     for (int side=0; side<6; side++) {
-                        if (NextBlockEmpty(block, pos, side)) {
-                            mesh.AddFace(block, pos, side);
+                        if (NextBlockEmpty(block, bpos, side)) {
+                            mesh.AddFace(block, bpos, side, textureHandler);
                         }
                     }
                 }
@@ -47,10 +48,6 @@ void Chunk::GenerateMesh() {
         }
     }
     mesh.BuildMesh();
-}
-
-void Chunk::Render() {
-    renderer.RenderMesh(mesh.GetVAO(), mesh.GetVertexCount(), model);
 }
 
 bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction) {
@@ -86,9 +83,9 @@ bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& pos, int directi
 }
 
 bool Chunk::InBounds(int x2, int y2, int z2) const {
-    if (x <= x2 && x2 < x + CHUNK_SIZE_X) {
-        if (y <= y2 && y2 < y + CHUNK_SIZE_Y) {
-            if (z <= z2 && z2 < z + CHUNK_SIZE_Z) {
+    if (0 <= x2 && x2 < CHUNK_SIZE_X) {
+        if (0 <= y2 && y2 < CHUNK_SIZE_Y) {
+            if (0 <= z2 && z2 < CHUNK_SIZE_Z) {
                 return true;
             }
         }

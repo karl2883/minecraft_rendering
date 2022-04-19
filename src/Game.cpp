@@ -43,7 +43,7 @@ void Game::ProcessInput(GLFWwindow* window) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    const float cameraSpeed = 2.5f * deltaTime;
+    const float cameraSpeed = 10.0f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.Move(FORWARDS, cameraSpeed);
     }
@@ -78,7 +78,7 @@ Game::Game(GLFWwindow* win)
     camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f),
     textureHandler((char*)"pixelartattempt/grass.png"),
     renderer(win, shader, camera, 800, 600, 45.0f, textureHandler),
-    chunk(0, 0, 0, renderer)
+    world(glm::vec3(0.0f, 0.0f, 3.0f), textureHandler)
 {
     glfwSetWindowUserPointer(win, this);
 
@@ -110,6 +110,7 @@ void Game::Run() {
         UpdateEvents();
         ProcessInput(window);
 
+        world.UpdateChunks(camera.GetPos());
         // output how much fps we have
         timeSum += deltaTime;
         frameCount++;
@@ -123,7 +124,7 @@ void Game::Run() {
         renderer.Clear();
         renderer.UpdateView();
 
-        chunk.Render();
+        world.Render(renderer);
 
         renderer.Update();
     }

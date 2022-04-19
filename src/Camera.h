@@ -36,6 +36,8 @@ public:
     void Move(CameraMovement movement, float amount);
     void Rotate(CameraRotation rotation, float degrees);
     
+    glm::vec3& GetPos() { return pos; }
+
     void SetPos(glm::vec3 newpos) { pos = newpos; }
     void SetRotation(float newyaw, float newpitch) { yaw = newyaw; pitch = newpitch; };
     

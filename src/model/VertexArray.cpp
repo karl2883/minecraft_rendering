@@ -6,11 +6,6 @@ VertexArray::VertexArray()
     Bind();
 }
 
-VertexArray::~VertexArray()
-{
-    glDeleteVertexArrays(1, &m_RendererID);
-}
-
 void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
 {
     Bind();
@@ -31,4 +26,8 @@ void VertexArray::Bind() const {
 
 void VertexArray::Unbind() const {
     glBindVertexArray(0);
+}
+
+void VertexArray::Delete() const {
+    glDeleteVertexArrays(1, &m_RendererID);
 }
