@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
+#include <functional>
 #include "Block.h"
-#include "../gfx/Renderer.h"
 #include "../gfx/TextureHandler.h"
 #include "ChunkMesh.h"
 
@@ -13,16 +13,24 @@
 #define CHUNK_VOLUME (CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z)
 #define CHUNK_LAYER_SIZE (CHUNK_SIZE_X * CHUNK_SIZE_Z)
 
+class World;
+
 class Chunk {
     private:
         std::array<Block, CHUNK_VOLUME> data;
         glm::vec3 pos;
         glm::mat4 model;
         ChunkMesh mesh;
+
+        std::array<Chunk*, 4> neighbouringChunks;
+
+        World* world;
+
     public:
-        Chunk(glm::vec3& pos, TextureHandler& textureHandler);
+        Chunk(glm::vec3& pos, TextureHandler& textureHandler, World* world);
         void Generate();
         void GenerateMesh(TextureHandler& textureHandler);
+        
         bool InBounds(int x, int y, int z) const;
         bool NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction);
 
@@ -34,3 +42,5 @@ class Chunk {
 
         void Delete() { mesh.GetVAO().Delete(); }
 };
+
+#include "World.h"

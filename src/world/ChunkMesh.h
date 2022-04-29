@@ -17,6 +17,7 @@ public:
     ChunkMesh(TextureHandler& textureHandler) {}
     
     void AddFace(const Block& block, const glm::vec3& pos, int side, TextureHandler& textureHandler);
+    void Clear();
     void BuildMesh();
     VertexArray& GetVAO();
     int GetVertexCount() const;

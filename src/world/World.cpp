@@ -15,9 +15,12 @@ void World::InitializeChunks(const glm::vec3& pos) {
     for (int i=x_low; i<=x_high; i++) {
         for (int k=z_low; k<=z_high; k++) {
             glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, -20, k*CHUNK_SIZE_Z);
-            Chunk newChunk = Chunk(cpos, textureHandler);
+            Chunk newChunk = Chunk(cpos, textureHandler, this);
             chunks.push_back(newChunk);
         }
+    }
+    for (Chunk& chunk: chunks) {
+        chunk.GenerateMesh(textureHandler);
     }
 }
 
@@ -48,13 +51,21 @@ void World::UpdateChunks(const glm::vec3& pos) {
     z_high = z_high_n;
 }
 
+void World::AddChunk(glm::vec3& cpos) {
+    Chunk newChunk = Chunk(cpos, textureHandler, this);
+    chunks.push_back(newChunk);
+    newChunk.GenerateMesh(textureHandler);
+}
+
 void World::AddChunks(int xl, int xh, int zl, int zh) {
     for (int i=xl; i<=xh; i++) {
         for (int k=zl; k<=zh; k++) {
             glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, -20, k*CHUNK_SIZE_Z);
-            Chunk newChunk = Chunk(cpos, textureHandler);
-            chunks.push_back(newChunk);
+            AddChunk(cpos);
         }
+    }
+    for (Chunk& chunk: chunks) {
+        chunk.GenerateMesh(textureHandler);
     }
 }
 
@@ -75,4 +86,37 @@ void World::Render(Renderer& renderer) {
     for (Chunk& chunk: chunks) {
         renderer.RenderMesh(chunk.GetMesh().GetVAO(), chunk.GetMesh().GetVertexCount(), chunk.GetModel());
     }
+}
+
+bool World::BlockInBounds(const glm::vec3 &pos) {
+    int bx = (int)pos.x % CHUNK_SIZE_X;
+    if (bx < 0) bx += CHUNK_SIZE_X;
+    int bz = (int)pos.z % CHUNK_SIZE_Z;
+    if (bz < 0) bz += CHUNK_SIZE_Z;
+    int cx = pos.x - bx;
+    int cz = pos.z - bz;
+    for (Chunk& chunk: chunks) {
+        glm::vec3& cpos = chunk.GetPos(); 
+        if (cpos.x == cx && cpos.z == cz) {
+            return true; 
+        }
+    }
+    return false;
+}
+
+Block& World::GetBlock(const glm::vec3 &pos) {
+    int bx = (int)pos.x % CHUNK_SIZE_X;
+    if (bx < 0) bx += CHUNK_SIZE_X;
+    int bz = (int)pos.z % CHUNK_SIZE_Z;
+    if (bz < 0) bz += CHUNK_SIZE_Z;
+    int cx = pos.x - bx;
+    int cz = pos.z - bz;
+    std::cout << bx << " " << cx << std::endl;
+    for (Chunk& chunk: chunks) {
+        glm::vec3& cpos = chunk.GetPos(); 
+        if (cpos.x == cx && cpos.z == cz) {
+            return chunk.GetBlock(bx, pos.y+20, bz);
+        }
+    }
+    throw "No Block found, forgot to use BlockInBounds";
 }

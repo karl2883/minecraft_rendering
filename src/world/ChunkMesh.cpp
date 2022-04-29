@@ -44,6 +44,10 @@ std::vector<float> cubeVertices = std::vector<float>({
     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f
 });
 
+void ChunkMesh::Clear() {
+    vertices.clear();
+}
+
 void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side, TextureHandler& textureHandler) {
     std::vector<glm::vec2> coords = textureHandler.GetSideCoordinates(side);
 

@@ -1,12 +1,15 @@
 #include "Chunk.h"
 #include <glm/gtx/string_cast.hpp>
+#include <vector>
 
-Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler) 
-    :pos(xpos), mesh(textureHandler), model(1.0f)
+Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, World* world) 
+    :pos(xpos), mesh(textureHandler), model(1.0f), neighbouringChunks(), world(world)
 {
+    for (int a=0; a<4; a++) {
+        neighbouringChunks[a] = nullptr;
+    }
     model = glm::translate(model, pos);
     Generate();
-    GenerateMesh(textureHandler);
 }
 
 void Chunk::Generate() {
@@ -28,6 +31,7 @@ void Chunk::Generate() {
 }
 
 void Chunk::GenerateMesh(TextureHandler& textureHandler) {
+    mesh.Clear();
     Block block;
     glm::vec3 bpos;
     for (int i=0; i<CHUNK_SIZE_X; i++) {
@@ -50,10 +54,10 @@ void Chunk::GenerateMesh(TextureHandler& textureHandler) {
     mesh.BuildMesh();
 }
 
-bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction) {
-    int x = pos.x;
-    int y = pos.y;
-    int z = pos.z;
+bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& bpos, int direction) {
+    int x = bpos.x;
+    int y = bpos.y;
+    int z = bpos.z;
     switch(direction) {
     case 0:
         y += 1;
@@ -78,6 +82,21 @@ bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& pos, int directi
         Block& nextBlock = GetBlock(x, y, z);
         return nextBlock.getBlockType() == BlockType::AIR;
     } else {
+        if (direction != 0 && direction != 5) {
+            glm::vec3 abs_bpos = glm::vec3(x, y, z) + pos;
+            if (world->BlockInBounds(abs_bpos)) {
+                if (world->GetBlock(abs_bpos).getBlockType() != BlockType::AIR) {
+                    return false;
+                }                
+            }
+        }
+        glm::vec3 abs_bpos = glm::vec3(x, y, z) + pos;
+        if (y <= 1 && direction != 5) {
+            if (direction == 2) {
+                std::cout << abs_bpos.x << " " << abs_bpos.y << " " << abs_bpos.z << std::endl;
+                std::cout << world->BlockInBounds(abs_bpos) << std::endl;
+            }
+        }
         return true;
     }
 }
