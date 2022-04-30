@@ -33,7 +33,7 @@ GLFWwindow* setup(int width, int height, GLDEBUGPROC debugfun, GLFWframebuffersi
     glfwSetFramebufferSizeCallback(window, resizefun);
 
     // change to 0 for unlimited FPS (may make noise for graphics card LOL)
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     glfwSetCursorPosCallback(window, cursorfun);

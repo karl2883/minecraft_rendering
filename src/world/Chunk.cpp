@@ -90,13 +90,6 @@ bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& bpos, int direct
                 }                
             }
         }
-        glm::vec3 abs_bpos = glm::vec3(x, y, z) + pos;
-        if (y <= 1 && direction != 5) {
-            if (direction == 2) {
-                std::cout << abs_bpos.x << " " << abs_bpos.y << " " << abs_bpos.z << std::endl;
-                std::cout << world->BlockInBounds(abs_bpos) << std::endl;
-            }
-        }
         return true;
     }
 }
