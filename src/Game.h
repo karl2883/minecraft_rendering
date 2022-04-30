@@ -4,10 +4,10 @@
 #include <iostream>
 #include "gfx/Renderer.h"
 #include "gfx/Shader.h"
-#include "Camera.h"
+#include "player/Camera.h"
+#include "player/Player.h"
 #include "world/World.h"
 #include "gfx/TextureHandler.h"
-#include "Camera.h"
 
 class Game {
 private:
@@ -19,7 +19,7 @@ private:
 
     Shader shader;
 
-    Camera camera;
+    Player player;
 
     TextureHandler textureHandler;
 

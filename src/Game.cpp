@@ -16,8 +16,8 @@ void Game::MouseCallback(const GLFWwindow* window, double xpos, double ypos) {
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    camera.Rotate(YAW, xoffset);
-    camera.Rotate(PITCH, yoffset);
+    player.Rotate(YAW, xoffset);
+    player.Rotate(PITCH, yoffset);
 }
 
 void Game::ProcessInput(GLFWwindow* window) {
@@ -45,22 +45,22 @@ void Game::ProcessInput(GLFWwindow* window) {
 
     const float cameraSpeed = 10.0f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.Move(FORWARDS, cameraSpeed);
+        player.Move(FORWARDS, cameraSpeed);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.Move(BACKWARDS, cameraSpeed);
+        player.Move(BACKWARDS, cameraSpeed);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.Move(LEFT, cameraSpeed);
+        player.Move(LEFT, cameraSpeed);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.Move(RIGHT, cameraSpeed);
+        player.Move(RIGHT, cameraSpeed);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        camera.Move(UP, cameraSpeed);
+        player.Move(UP, cameraSpeed);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        camera.Move(DOWN, cameraSpeed);
+        player.Move(DOWN, cameraSpeed);
     }
 }
 
@@ -75,9 +75,9 @@ void Game::UpdateEvents() {
 Game::Game(GLFWwindow* win) 
     // sorry for hardcoded paths
     :shader("src/gfx/Shaders/VertexShader.vs", "src/gfx/Shaders/FragmentShader.fs"),
-    camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f),
+    player(glm::vec3(0.0f, 0.0f, 3.0f)),
     textureHandler((char*)"pixelartattempt/grass.png"),
-    renderer(win, shader, camera, 800, 600, 45.0f, textureHandler),
+    renderer(win, shader, player.GetCamera(), 800, 600, 45.0f, textureHandler),
     world(glm::vec3(0.0f, 0.0f, 3.0f), textureHandler)
 {
     glfwSetWindowUserPointer(win, this);
@@ -110,7 +110,7 @@ void Game::Run() {
         UpdateEvents();
         ProcessInput(window);
 
-        world.UpdateChunks(camera.GetPos());
+        world.UpdateChunks(player.GetPos());
         // output how much fps we have
         timeSum += deltaTime;
         frameCount++;
@@ -119,6 +119,9 @@ void Game::Run() {
             frameCount = 0;
             timeSum = 0.0f;
         }
+
+        // Tick
+        player.Tick();
 
         // Rendering
         renderer.Clear();

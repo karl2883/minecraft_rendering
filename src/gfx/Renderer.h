@@ -3,7 +3,7 @@
 #include "Shader.h"
 #include "TextureHandler.h"
 #include "../model/VertexArray.h"
-#include "../Camera.h"
+#include "../player/Camera.h"
 #include "Texture.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
