@@ -18,7 +18,7 @@ Texture& TextureHandler::GetTexture()  {
     return texture;
 }
 
-std::vector<glm::vec2> TextureHandler::GetSideCoordinates(int side) const {
+std::vector<glm::vec2> TextureHandler::GetGrassCoordinates(int side) const {
     // swapping 0 and 1
     int row = rows - (side / cols) - 1;
     int col = side % cols;
@@ -32,4 +32,8 @@ std::vector<glm::vec2> TextureHandler::GetSideCoordinates(int side) const {
         }
     }
     return coordVec;
+}
+
+std::vector<glm::vec2> TextureHandler::GetDirtCoordinates(int side) const {
+    return GetGrassCoordinates(5);
 }

@@ -18,8 +18,10 @@ void Chunk::Generate() {
             for (int k=0; k<CHUNK_SIZE_Z; k++) {
                 BlockType type;
                 // I want a pyramid
-                if (j <= 7) {
+                if (j == 7) {
                     type = BlockType::GRASS;
+                } else if (j <= 7) {
+                    type = BlockType::DIRT;
                 } else {
                     type = BlockType::AIR;
                 }
