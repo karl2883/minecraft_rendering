@@ -12,4 +12,4 @@ I'm just trying to learn opengl and improve my c++ skills
 7. Run "./build/src/Main"
 8. You may need to install libraries such as glew or glm if there is an error
 
-You will see a flat grass world. Chunks will be added/removed as you move. L/F to switch between line and fill mode.
+You will see a flat grass world. Chunks will be added/removed as you move with standard minecraft controls. You can also break blocks. L/F to switch between line and fill mode.
