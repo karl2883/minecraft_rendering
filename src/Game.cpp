@@ -62,6 +62,14 @@ void Game::ProcessInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         player.Move(DOWN, cameraSpeed);
     }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (!mousePressedLastFrame) {
+            mousePressedLastFrame = true;
+            player.DestroyBlock();
+        }
+    } else {
+        mousePressedLastFrame = false;
+    }
 }
 
 bool Game::ShouldRun() const {
@@ -75,10 +83,10 @@ void Game::UpdateEvents() {
 Game::Game(GLFWwindow* win) 
     // sorry for hardcoded paths
     :shader("src/gfx/Shaders/VertexShader.vs", "src/gfx/Shaders/FragmentShader.fs"),
-    player(glm::vec3(0.0f, 0.0f, 3.0f)),
     textureHandler((char*)"pixelartattempt/grass.png"),
-    renderer(win, shader, player.GetCamera(), 800, 600, 45.0f, textureHandler),
-    world(glm::vec3(0.0f, 0.0f, 3.0f), textureHandler)
+    world(glm::vec3(0.0f, 0.0f, 3.0f), textureHandler),
+    player(glm::vec3(0.0f, 0.0f, 3.0f), world),
+    renderer(win, shader, player.GetCamera(), 800, 600, 45.0f, textureHandler)
 {
     glfwSetWindowUserPointer(win, this);
 
@@ -91,6 +99,8 @@ Game::Game(GLFWwindow* win)
 
     // Keep track of whether we have an initial position for the mouse or not
     firstMouse = true;
+
+    mousePressedLastFrame = false;
 
     // reference variables for the mouse
     lastx = 400, lastx = 300;

@@ -4,6 +4,7 @@
 
 enum BlockType {
     GRASS,
+    DIRT,
     AIR
 };
 
@@ -14,6 +15,7 @@ public:
     Block() {};
     Block(BlockType nBlockType) { blockType = nBlockType; }
 
-    BlockType getBlockType() const { return blockType; }
+    BlockType GetBlockType() const { return blockType; }
+    void SetBlockType(BlockType nBlockType) { blockType = nBlockType; }
 };
 

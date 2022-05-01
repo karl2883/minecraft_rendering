@@ -2,8 +2,8 @@
 #include <iostream>
 #include <glm/gtx/io.hpp>
 
-Player::Player(glm::vec3 pos) 
-:camera(pos, -90.0f, 0.0f)
+Player::Player(glm::vec3 pos, World& world) 
+:camera(pos, -90.0f, 0.0f), world(world)
 {
     worldUpVec = glm::vec3(0.0f, 1.0f, 0.0f);
     UpdateVectors();
@@ -35,6 +35,20 @@ void Player::Move(PlayerMovement movement, float amount) {
         pos += worldUpVec * amount;
     } else if (movement == DOWN) {
         pos -= worldUpVec * amount;
+    }
+}
+
+void Player::DestroyBlock() {
+    Ray ray {pos, frontVec};
+    for (int i=0; i<(10.0f/0.05f); i++) {
+        ray.Advance(0.05f);
+        if (world.BlockInBounds(pos)) {
+            Block& currentBlock = world.GetBlock(ray.GetPos());
+            if (currentBlock.GetBlockType() != BlockType::AIR) {
+                world.SetBlock(ray.GetPos(), BlockType::AIR);
+                break;
+            }
+        }
     }
 }
 

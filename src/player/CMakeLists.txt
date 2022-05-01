@@ -1,1 +1,1 @@
-add_library(Player Camera.cpp Player.cpp)
+add_library(Player Camera.cpp Player.cpp Ray.cpp)

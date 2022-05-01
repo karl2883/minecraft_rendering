@@ -153,18 +153,47 @@ void World::Render(Renderer& renderer) {
 
 bool World::BlockInBounds(const glm::vec3 &pos) {
     return (x_low*CHUNK_SIZE_X <= pos.x && pos.x < (x_high+1)*CHUNK_SIZE_X &&
-            z_low*CHUNK_SIZE_Z <= pos.z && pos.z < (z_high+1)*CHUNK_SIZE_Z);
+            z_low*CHUNK_SIZE_Z <= pos.z && pos.z < (z_high+1)*CHUNK_SIZE_Z &&
+            -20 <= pos.y && pos.y < -4);
+}
+
+void World::SetBlock(glm::vec3 pos, BlockType newBlockType) {
+    Block& block = GetBlock(pos);
+    block.SetBlockType(newBlockType);
+    Chunk& chunk = GetChunk(pos);
+    chunk.GenerateMesh(textureHandler);
+}
+
+Chunk& World::GetChunk(glm::vec3& pos) {
+    int x = std::floor(pos.x);
+    int y = std::floor(pos.y);
+    int z = std::floor(pos.z);
+
+    int bx = x % CHUNK_SIZE_X;
+    if (bx < 0) bx += CHUNK_SIZE_X;
+    int bz = z % CHUNK_SIZE_Z;
+    if (bz < 0) bz += CHUNK_SIZE_Z;
+
+    int cx = (x - bx) / CHUNK_SIZE_X;
+    int cz = (z - bz) / CHUNK_SIZE_Z;
+
+    Chunk& chunk = chunks[cx-x_low][cz-z_low];
+    return chunk;
 }
 
 Block& World::GetBlock(const glm::vec3 &pos) {
-    int bx = (int)pos.x % CHUNK_SIZE_X;
+    int x = std::floor(pos.x);
+    int y = std::floor(pos.y);
+    int z = std::floor(pos.z);
+
+    int bx = x % CHUNK_SIZE_X;
     if (bx < 0) bx += CHUNK_SIZE_X;
-    int bz = (int)pos.z % CHUNK_SIZE_Z;
+    int bz = z % CHUNK_SIZE_Z;
     if (bz < 0) bz += CHUNK_SIZE_Z;
 
-    int cx = (pos.x - bx) / CHUNK_SIZE_X;
-    int cz = (pos.z - bz) / CHUNK_SIZE_Z;
+    int cx = (x - bx) / CHUNK_SIZE_X;
+    int cz = (z - bz) / CHUNK_SIZE_Z;
 
     Chunk& chunk = chunks[cx-x_low][cz-z_low];
-    return chunk.GetBlock(bx, pos.y+20, bz);
+    return chunk.GetBlock(bx, y+20, bz);
 }

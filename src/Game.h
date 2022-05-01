@@ -19,18 +19,20 @@ private:
 
     Shader shader;
 
-    Player player;
-
     TextureHandler textureHandler;
 
-    Renderer renderer;
-
     World world;
+
+    Player player;
+
+    Renderer renderer;
 
     float deltaTime;
     float lastFrame;
 
     bool firstMouse;
+
+    bool mousePressedLastFrame;
 
     float lastx;
     float lasty;

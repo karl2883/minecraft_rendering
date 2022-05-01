@@ -41,7 +41,7 @@ void Chunk::GenerateMesh(TextureHandler& textureHandler) {
                 bpos.x = i;
                 bpos.y = j;
                 bpos.z = k;
-                if (block.getBlockType() != BlockType::AIR) {
+                if (block.GetBlockType() != BlockType::AIR) {
                     for (int side=0; side<6; side++) {
                         if (NextBlockEmpty(block, bpos, side)) {
                             mesh.AddFace(block, bpos, side, textureHandler);
@@ -80,12 +80,12 @@ bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& bpos, int direct
     }
     if (InBounds(x, y, z)) {
         Block& nextBlock = GetBlock(x, y, z);
-        return nextBlock.getBlockType() == BlockType::AIR;
+        return nextBlock.GetBlockType() == BlockType::AIR;
     } else {
         if (direction != 0 && direction != 5) {
             glm::vec3 abs_bpos = glm::vec3(x, y, z) + pos;
             if (world->BlockInBounds(abs_bpos)) {
-                if (world->GetBlock(abs_bpos).getBlockType() != BlockType::AIR) {
+                if (world->GetBlock(abs_bpos).GetBlockType() != BlockType::AIR) {
                     return false;
                 }                
             }
