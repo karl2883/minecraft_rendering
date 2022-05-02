@@ -40,12 +40,16 @@ void Player::Move(PlayerMovement movement, float amount) {
 
 void Player::DestroyBlock() {
     Ray ray {pos, frontVec};
-    for (int i=0; i<(10.0f/0.05f); i++) {
-        ray.Advance(0.05f);
-        if (world.BlockInBounds(pos)) {
-            Block& currentBlock = world.GetBlock(ray.GetPos());
+    for (int i=0; i<(RAY_DISTANCE/RAY_STEP_DIST); i++) {
+        ray.Advance(RAY_STEP_DIST);
+        if (world.BlockInBounds(ray.GetPos())) {
+            glm::vec3 rpos = ray.GetPos();
+            rpos.x = std::floor(rpos.x);
+            rpos.y = std::floor(rpos.y);
+            rpos.z = std::floor(rpos.z);
+            Block& currentBlock = world.GetBlock(rpos);
             if (currentBlock.GetBlockType() != BlockType::AIR) {
-                world.SetBlock(ray.GetPos(), BlockType::AIR);
+                world.SetBlock(rpos, BlockType::AIR);
                 break;
             }
         }

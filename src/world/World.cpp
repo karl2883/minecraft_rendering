@@ -1,5 +1,5 @@
 #include "World.h"
-#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/io.hpp>
 
 World::World(const glm::vec3& pos, TextureHandler& textureHandler) 
 :textureHandler(textureHandler)
@@ -15,7 +15,7 @@ void World::InitializeChunks(const glm::vec3& pos) {
     for (int i=x_low; i<=x_high; i++) {
         std::vector<Chunk> newVec {};
         for (int k=z_low; k<=z_high; k++) {
-            glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, -20, k*CHUNK_SIZE_Z);
+            glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, Y_OFFSET, k*CHUNK_SIZE_Z);
             Chunk newChunk = Chunk(cpos, textureHandler, this);
             newVec.push_back(newChunk);
         }
@@ -64,7 +64,7 @@ void World::AddChunksX(int xn) {
     std::vector<Chunk> newVec {};
     // Adding the chunks
     for (int k=z_low; k<=z_high; k++) {
-        glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_X, -20, k*CHUNK_SIZE_Z);
+        glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_X, Y_OFFSET, k*CHUNK_SIZE_Z);
         Chunk newChunk = Chunk(cpos, textureHandler, this);
         newVec.push_back(newChunk);
     }
@@ -90,7 +90,7 @@ void World::AddChunksZ(int zn) {
     // Adding the chunks
     for (int i=x_low; i<=x_high; i++) {
         std::vector<Chunk>& vec = chunks[i-x_low];
-        glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, -20, zn*CHUNK_SIZE_Z);
+        glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, Y_OFFSET, zn*CHUNK_SIZE_Z);
         Chunk newChunk = Chunk(cpos, textureHandler, this);
         if (zn < z_low_old) {
             vec.insert(vec.begin(), newChunk);
@@ -154,7 +154,7 @@ void World::Render(Renderer& renderer) {
 bool World::BlockInBounds(const glm::vec3 &pos) {
     return (x_low*CHUNK_SIZE_X <= pos.x && pos.x < (x_high+1)*CHUNK_SIZE_X &&
             z_low*CHUNK_SIZE_Z <= pos.z && pos.z < (z_high+1)*CHUNK_SIZE_Z &&
-            -20 <= pos.y && pos.y < -4);
+            Y_OFFSET <= pos.y && pos.y < -4);
 }
 
 void World::SetBlock(glm::vec3 pos, BlockType newBlockType) {
@@ -162,38 +162,38 @@ void World::SetBlock(glm::vec3 pos, BlockType newBlockType) {
     block.SetBlockType(newBlockType);
     Chunk& chunk = GetChunk(pos);
     chunk.GenerateMesh(textureHandler);
+
+    glm::vec3 blockCoords = GetBlockCoordinates(pos);
+    std::vector<glm::vec2> offsets = chunk.GetNeighbourChunkOffsets(blockCoords.x, blockCoords.y, blockCoords.z);
+    for (glm::vec2& offset: offsets) {
+        glm::vec3 newpos = glm::vec3(pos.x+offset.x, pos.y, pos.z+offset.y);
+        if (BlockInBounds(newpos)) {
+            GetChunk(newpos).GenerateMesh(textureHandler);
+        }
+    }
+}
+
+glm::vec3 World::GetBlockCoordinates(glm::vec3& pos) {
+    int bx = (int)pos.x % CHUNK_SIZE_X;
+    if (bx < 0) bx += CHUNK_SIZE_X;
+    int bz = (int)pos.z % CHUNK_SIZE_Z;
+    if (bz < 0) bz += CHUNK_SIZE_Z;
+
+    return glm::vec3(bx, (int)pos.y-Y_OFFSET, bz);
 }
 
 Chunk& World::GetChunk(glm::vec3& pos) {
-    int x = std::floor(pos.x);
-    int y = std::floor(pos.y);
-    int z = std::floor(pos.z);
+    glm::vec3 blockCoords = GetBlockCoordinates(pos);
 
-    int bx = x % CHUNK_SIZE_X;
-    if (bx < 0) bx += CHUNK_SIZE_X;
-    int bz = z % CHUNK_SIZE_Z;
-    if (bz < 0) bz += CHUNK_SIZE_Z;
-
-    int cx = (x - bx) / CHUNK_SIZE_X;
-    int cz = (z - bz) / CHUNK_SIZE_Z;
-
+    int cx = (pos.x - blockCoords.x) / CHUNK_SIZE_X;
+    int cz = (pos.z - blockCoords.z) / CHUNK_SIZE_Z;
+    
     Chunk& chunk = chunks[cx-x_low][cz-z_low];
     return chunk;
 }
 
-Block& World::GetBlock(const glm::vec3 &pos) {
-    int x = std::floor(pos.x);
-    int y = std::floor(pos.y);
-    int z = std::floor(pos.z);
-
-    int bx = x % CHUNK_SIZE_X;
-    if (bx < 0) bx += CHUNK_SIZE_X;
-    int bz = z % CHUNK_SIZE_Z;
-    if (bz < 0) bz += CHUNK_SIZE_Z;
-
-    int cx = (x - bx) / CHUNK_SIZE_X;
-    int cz = (z - bz) / CHUNK_SIZE_Z;
-
-    Chunk& chunk = chunks[cx-x_low][cz-z_low];
-    return chunk.GetBlock(bx, y+20, bz);
+Block& World::GetBlock(glm::vec3 &pos) {
+    glm::vec3 blockCoords = GetBlockCoordinates(pos);
+    Chunk& chunk = GetChunk(pos);
+    return chunk.GetBlock(blockCoords.x, blockCoords.y, blockCoords.z);
 }

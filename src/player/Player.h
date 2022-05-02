@@ -24,6 +24,9 @@ private:
     glm::vec3 worldUpVec;
 
     World& world;
+
+    constexpr static const float RAY_STEP_DIST = 0.05f;
+    constexpr static const float RAY_DISTANCE = 8.0f;
 public:
     Player(glm::vec3 pos, World& world);
 

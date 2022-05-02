@@ -107,6 +107,27 @@ bool Chunk::InBounds(int x2, int y2, int z2) const {
     return false;
 }
 
+bool Chunk::OnBorder(int x, int y, int z) const {
+    return x == 0 || x == CHUNK_SIZE_X-1 || z == 0 || z == CHUNK_SIZE_Z-1;
+}
+
+std::vector<glm::vec2> Chunk::GetNeighbourChunkOffsets(int x, int y, int z) const {
+    std::vector<glm::vec2> offsets;
+    if (x == 0) {
+        offsets.push_back(glm::vec2(-1, 0));
+    }
+    if (x == CHUNK_SIZE_X-1) {
+        offsets.push_back(glm::vec2(1, 0));
+    }
+    if (z == 0) {
+        offsets.push_back(glm::vec2(0, -1));
+    }
+    if (z == CHUNK_SIZE_Z-1) {
+        offsets.push_back(glm::vec2(0, 1));
+    }
+    return offsets;
+}
+
 int Chunk::GetDataPos(int x, int y, int z) const {
     return y*CHUNK_LAYER_SIZE+x*CHUNK_SIZE_Z+z;
 }

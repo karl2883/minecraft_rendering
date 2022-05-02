@@ -21,6 +21,7 @@ private:
 
     TextureHandler& textureHandler;
     static const int RENDER_DISTANCE = 2;
+    static const int Y_OFFSET = -20;
 public:
     World(const glm::vec3& pos, TextureHandler& textureHandler);
     
@@ -35,6 +36,7 @@ public:
     void SetBlock(glm::vec3 pos, BlockType newBlockType);
 
     bool BlockInBounds(const glm::vec3& pos);
+    glm::vec3 GetBlockCoordinates(glm::vec3& pos);
     Chunk& GetChunk(glm::vec3& pos);
-    Block& GetBlock(const glm::vec3& pos);
+    Block& GetBlock(glm::vec3& pos);
 };
