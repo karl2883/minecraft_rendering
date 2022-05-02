@@ -38,21 +38,50 @@ void Player::Move(PlayerMovement movement, float amount) {
     }
 }
 
+glm::vec3 floored_vec3(glm::vec3& vec) {
+    glm::vec3 floored;
+    floored.x = std::floor(vec.x);
+    floored.y = std::floor(vec.y);
+    floored.z = std::floor(vec.z);
+    return floored;
+}
+
 void Player::DestroyBlock() {
     Ray ray {pos, frontVec};
     for (int i=0; i<(RAY_DISTANCE/RAY_STEP_DIST); i++) {
         ray.Advance(RAY_STEP_DIST);
         if (world.BlockInBounds(ray.GetPos())) {
-            glm::vec3 rpos = ray.GetPos();
-            rpos.x = std::floor(rpos.x);
-            rpos.y = std::floor(rpos.y);
-            rpos.z = std::floor(rpos.z);
+            glm::vec3 rpos = floored_vec3(ray.GetPos());
             Block& currentBlock = world.GetBlock(rpos);
             if (currentBlock.GetBlockType() != BlockType::AIR) {
                 world.SetBlock(rpos, BlockType::AIR);
                 break;
             }
-        }
+        } else break;
+    }
+}
+
+void Player::SetBlock() {
+    Ray ray {pos, frontVec};
+    glm::vec3 floored_pos = floored_vec3(pos);
+    Block& previousBlock = world.GetBlock(floored_pos);
+
+    for (int i=0; i<(RAY_DISTANCE/RAY_STEP_DIST); i++) {
+        ray.Advance(RAY_STEP_DIST);
+        if (world.BlockInBounds(ray.GetPos())) {
+            glm::vec3 rpos = floored_vec3(ray.GetPos());
+            Block& currentBlock = world.GetBlock(rpos);
+            if (currentBlock.GetBlockType() != BlockType::AIR) {
+                if (previousBlock.GetBlockType() != BlockType::AIR) {
+                    break;
+                }
+                ray.Advance(-RAY_STEP_DIST);
+                glm::vec3 prevpos = floored_vec3(ray.GetPos());
+                world.SetBlock(prevpos, BlockType::DIRT);
+                break;
+            }
+            previousBlock = currentBlock;
+        } else break;
     }
 }
 

@@ -32,7 +32,8 @@ private:
 
     bool firstMouse;
 
-    bool mousePressedLastFrame;
+    bool mouseLeftPressedLastFrame;
+    bool mouseRightPressedLastFrame;
 
     float lastx;
     float lasty;

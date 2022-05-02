@@ -63,12 +63,20 @@ void Game::ProcessInput(GLFWwindow* window) {
         player.Move(DOWN, cameraSpeed);
     }
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if (!mousePressedLastFrame) {
-            mousePressedLastFrame = true;
+        if (!mouseLeftPressedLastFrame) {
+            mouseLeftPressedLastFrame = true;
             player.DestroyBlock();
         }
     } else {
-        mousePressedLastFrame = false;
+        mouseLeftPressedLastFrame = false;
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        if (!mouseRightPressedLastFrame) {
+            mouseRightPressedLastFrame = true;
+            player.SetBlock();
+        }
+    } else {
+        mouseRightPressedLastFrame = false;
     }
 }
 
@@ -100,7 +108,8 @@ Game::Game(GLFWwindow* win)
     // Keep track of whether we have an initial position for the mouse or not
     firstMouse = true;
 
-    mousePressedLastFrame = false;
+    mouseLeftPressedLastFrame = false;
+    mouseRightPressedLastFrame = false;
 
     // reference variables for the mouse
     lastx = 400, lastx = 300;

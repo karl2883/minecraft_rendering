@@ -7,16 +7,16 @@
 #include "ChunkMesh.h"
 
 
+static const int CHUNK_SIZE_X = 16;
+static const int CHUNK_SIZE_Y = 16;
+static const int CHUNK_SIZE_Z = 16;
+static const int CHUNK_VOLUME = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
+static const int CHUNK_LAYER_SIZE = CHUNK_SIZE_X * CHUNK_SIZE_Z;
+
 class World;
 
 class Chunk {
     private:
-        static const int CHUNK_SIZE_X = 16;
-        static const int CHUNK_SIZE_Y = 16;
-        static const int CHUNK_SIZE_Z = 16;
-        static const int CHUNK_VOLUME = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
-        static const int CHUNK_LAYER_SIZE = CHUNK_SIZE_X * CHUNK_SIZE_Z;
-
         std::array<Block, CHUNK_VOLUME> data;
         glm::vec3 pos;
         glm::mat4 model;

@@ -34,6 +34,7 @@ public:
 
     void Move(PlayerMovement movement, float amount);
     void DestroyBlock();
+    void SetBlock();
     void Rotate(CameraRotation rotation, float degrees);
     void Tick();
 
