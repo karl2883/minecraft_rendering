@@ -1,3 +1,7 @@
+// I want github to recognize this as a c++ file or it'll look like my project is in C
+class T {};
+
+
 /* stb_image - v2.27 - public domain image loader - http://nothings.org/stb
                                   no warranty implied; use at your own risk
 
