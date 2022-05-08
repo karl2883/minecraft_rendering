@@ -62,6 +62,6 @@ void Renderer::Update() {
 
 // you only call this function when something changes to avoid unnecessary calculations
 void Renderer::UpdateProjection() {
-    projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 2000.0f);
     VP = projection * view;
 }

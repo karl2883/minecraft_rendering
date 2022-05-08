@@ -2,37 +2,43 @@
 #include <glm/gtx/string_cast.hpp>
 #include <vector>
 
-Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, World* world) 
-    :pos(xpos), mesh(textureHandler), model(1.0f), neighbouringChunks(), world(world)
+Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world) 
+    :pos(xpos), mesh(textureHandler), model(1.0f), world(world)
 {
-    for (int a=0; a<4; a++) {
-        neighbouringChunks[a] = nullptr;
-    }
     model = glm::translate(model, pos);
-    Generate();
+    Generate(noiseGenerator);
+    mesh_has_generated = false;
 }
 
-void Chunk::Generate() {
-    for (int i=0; i<CHUNK_SIZE_X; i++) {
-        for (int j=0; j<CHUNK_SIZE_Y; j++) {
-            for (int k=0; k<CHUNK_SIZE_Z; k++) {
-                BlockType type;
-                // I want a pyramid
-                if (j == 7) {
-                    type = BlockType::GRASS;
-                } else if (j <= 7) {
-                    type = BlockType::DIRT;
-                } else {
-                    type = BlockType::AIR;
-                }
-                Block newBlock { type };
-                data[GetDataPos(i, j, k)] = newBlock;
+void Chunk::Generate(NoiseGenerator& noiseGenerator) {
+    // fill everything with air first
+    for (int x=0; x<CHUNK_SIZE_X; x++) {
+        for (int y=0; y<CHUNK_SIZE_Y; y++) {
+            for (int z=0; z<CHUNK_SIZE_Z; z++) {
+                Block newBlock { BlockType::AIR };
+                data[GetDataPos(x, y, z)] = newBlock;
             }
+        }
+    }
+    // then generate each column with a height taken from a noise generator
+    for (int x=0; x<CHUNK_SIZE_X; x++) {
+        for (int z=0; z<CHUNK_SIZE_Z; z++) {
+            double height = noiseGenerator.GetHeight(x, z, pos.x, pos.z);
+            // if I don't do this and get unlucky, I'll get a segmentation fault
+            // the noise generator already handles the other extreme
+            if (height >= CHUNK_SIZE_Y) {
+                height = CHUNK_SIZE_Y - 1;
+            }
+            for (int y=0; y<height; y++) {
+                GetBlock(x, y, z).SetBlockType(BlockType::DIRT);
+            }
+            GetBlock(x, height, z).SetBlockType(BlockType::GRASS);
         }
     }
 }
 
 void Chunk::GenerateMesh(TextureHandler& textureHandler) {
+    mesh_has_generated = true;
     mesh.Clear();
     Block block;
     glm::vec3 bpos;
@@ -90,6 +96,8 @@ bool Chunk::NextBlockEmpty(const Block& block, const glm::vec3& bpos, int direct
                 if (world->GetBlock(abs_bpos).GetBlockType() != BlockType::AIR) {
                     return false;
                 }                
+            } else {
+                return false;
             }
         }
         return true;

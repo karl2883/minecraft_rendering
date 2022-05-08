@@ -2,7 +2,7 @@
 #include <glm/gtx/io.hpp>
 
 World::World(const glm::vec3& pos, TextureHandler& textureHandler) 
-:textureHandler(textureHandler)
+:textureHandler(textureHandler), noiseGenerator(2883)
 {
     x_low = (int) pos.x / CHUNK_SIZE_X - RENDER_DISTANCE;
     z_low = (int) pos.z / CHUNK_SIZE_Z - RENDER_DISTANCE;
@@ -16,7 +16,7 @@ void World::InitializeChunks(const glm::vec3& pos) {
         std::vector<Chunk> newVec {};
         for (int k=z_low; k<=z_high; k++) {
             glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, Y_OFFSET, k*CHUNK_SIZE_Z);
-            Chunk newChunk = Chunk(cpos, textureHandler, this);
+            Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
             newVec.push_back(newChunk);
         }
         chunks.push_back(newVec);
@@ -58,6 +58,16 @@ void World::UpdateChunks(const glm::vec3& pos) {
     } else if (z_high > z_high_old) {
         AddChunksZ(z_high);
     }
+
+    // generate meshes for one chunk per frame (for smoothness)
+    while (!mesh_generation_queue.empty() && !ChunkInBounds(mesh_generation_queue.front())) {
+        mesh_generation_queue.pop();
+    }
+    if (!mesh_generation_queue.empty()) {
+        glm::vec2& generated_mesh_pos = mesh_generation_queue.front();
+        chunks[generated_mesh_pos.x-x_low][generated_mesh_pos.y-z_low].GenerateMesh(textureHandler);
+        mesh_generation_queue.pop();
+    }
 }
 
 void World::AddChunksX(int xn) {
@@ -65,7 +75,7 @@ void World::AddChunksX(int xn) {
     // Adding the chunks
     for (int k=z_low; k<=z_high; k++) {
         glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_X, Y_OFFSET, k*CHUNK_SIZE_Z);
-        Chunk newChunk = Chunk(cpos, textureHandler, this);
+        Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
         newVec.push_back(newChunk);
     }
     // adding to 2d chunk list and redo meshes (adjacent chunks too)
@@ -73,14 +83,14 @@ void World::AddChunksX(int xn) {
         chunks.insert(chunks.begin(), newVec);
         for (int x=xn; x<=x_low_old; x++) {
             for (int z=z_low; z<=z_high; z++) {
-                chunks[x-x_low][z-z_low].GenerateMesh(textureHandler);
+                mesh_generation_queue.push(glm::vec2(x, z));
             }
         }
     } else {
         chunks.push_back(newVec);
         for (int x=x_high_old; x<=xn; x++) {
             for (int z=z_low; z<=z_high; z++) {
-                chunks[x-x_low][z-z_low].GenerateMesh(textureHandler);
+                mesh_generation_queue.push(glm::vec2(x, z));
             }
         }
     }
@@ -91,7 +101,7 @@ void World::AddChunksZ(int zn) {
     for (int i=x_low; i<=x_high; i++) {
         std::vector<Chunk>& vec = chunks[i-x_low];
         glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, Y_OFFSET, zn*CHUNK_SIZE_Z);
-        Chunk newChunk = Chunk(cpos, textureHandler, this);
+        Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
         if (zn < z_low_old) {
             vec.insert(vec.begin(), newChunk);
         }
@@ -103,13 +113,13 @@ void World::AddChunksZ(int zn) {
     if (zn < z_low_old) {
         for (int x=x_low; x<=x_high; x++) {
             for (int z=zn; z<=z_low_old; z++) {
-                chunks[x-x_low][z-z_low].GenerateMesh(textureHandler);
+                mesh_generation_queue.push(glm::vec2(x, z));
             }
         }
     } else {
         for (int x=x_low; x<=x_high; x++) {
             for (int z=z_high_old; z<=zn; z++) {
-                chunks[x-x_low][z-z_low].GenerateMesh(textureHandler);
+                mesh_generation_queue.push(glm::vec2(x, z));
             }
         }
     }
@@ -119,26 +129,26 @@ void World::RemoveRedundantChunks() {
     if (chunks[0][0].GetPos().x / CHUNK_SIZE_X < x_low) {
         chunks.erase(chunks.begin());
         for (Chunk& chunk: chunks[0]) {
-            chunk.GenerateMesh(textureHandler);
+            mesh_generation_queue.push(GetChunkPos(chunk));
         }
     }
     if (chunks.back()[0].GetPos().x / CHUNK_SIZE_X > x_high) {
         chunks.pop_back();
         for (Chunk& chunk: chunks.back()) {
-            chunk.GenerateMesh(textureHandler);
+            mesh_generation_queue.push(GetChunkPos(chunk));
         }
     }
     
     if (chunks[0][0].GetPos().z / CHUNK_SIZE_Z < z_low) {
         for (std::vector<Chunk>& vec: chunks) {
             vec.erase(vec.begin());
-            vec[0].GenerateMesh(textureHandler);
+            mesh_generation_queue.push(GetChunkPos(vec[0]));
         }
     }
     if (chunks[0].back().GetPos().z / CHUNK_SIZE_Z > z_high) {
         for (std::vector<Chunk>& vec: chunks) {
             vec.pop_back();
-            vec.back().GenerateMesh(textureHandler);
+            mesh_generation_queue.push(GetChunkPos(vec.back()));
         }
     }
 }
@@ -146,7 +156,9 @@ void World::RemoveRedundantChunks() {
 void World::Render(Renderer& renderer) {
     for (std::vector<Chunk>& vec: chunks) {
         for (Chunk& chunk: vec) {
-            renderer.RenderMesh(chunk.GetMesh().GetVAO(), chunk.GetMesh().GetVertexCount(), chunk.GetModel());
+            if (chunk.MeshGenerated()) {
+                renderer.RenderMesh(chunk.GetMesh().GetVAO(), chunk.GetMesh().GetVertexCount(), chunk.GetModel());
+            }
         }
     }
 }
@@ -154,7 +166,11 @@ void World::Render(Renderer& renderer) {
 bool World::BlockInBounds(const glm::vec3 &pos) {
     return (x_low*CHUNK_SIZE_X <= pos.x && pos.x < (x_high+1)*CHUNK_SIZE_X &&
             z_low*CHUNK_SIZE_Z <= pos.z && pos.z < (z_high+1)*CHUNK_SIZE_Z &&
-            Y_OFFSET <= pos.y && pos.y < -4);
+            Y_OFFSET <= pos.y && pos.y < Y_OFFSET+CHUNK_SIZE_Y);
+}
+
+bool World::ChunkInBounds(const glm::vec2& pos) {
+    return (x_low <= pos.x && x_high >= pos.x && z_low <= pos.y && z_high >= pos.y);
 }
 
 void World::SetBlock(glm::vec3 pos, BlockType newBlockType) {
@@ -180,6 +196,15 @@ glm::vec3 World::GetBlockCoordinates(glm::vec3& pos) {
     if (bz < 0) bz += CHUNK_SIZE_Z;
 
     return glm::vec3(bx, (int)pos.y-Y_OFFSET, bz);
+}
+
+glm::vec2 World::GetChunkPos(Chunk& chunk) {
+    glm::vec3& p = chunk.GetPos();
+    glm::vec3 blockCoords = GetBlockCoordinates(p);
+
+    int cx = (p.x - blockCoords.x) / CHUNK_SIZE_X;
+    int cz = (p.z - blockCoords.z) / CHUNK_SIZE_Z;
+    return glm::vec2(cx, cz);
 }
 
 Chunk& World::GetChunk(glm::vec3& pos) {

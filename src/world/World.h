@@ -2,7 +2,9 @@
 
 #include "Chunk.h"
 #include "../gfx/Renderer.h"
+#include "NoiseGenerator.h"
 #include <algorithm>
+#include <queue>
 #include <functional>
 
 class World {
@@ -19,9 +21,13 @@ private:
     int z_low;
     int z_high;
 
+    std::queue<glm::vec2> mesh_generation_queue;
+
     TextureHandler& textureHandler;
-    static const int RENDER_DISTANCE = 2;
-    static const int Y_OFFSET = -20;
+    static const int RENDER_DISTANCE = 6;
+    static const int Y_OFFSET = -100;
+
+    NoiseGenerator noiseGenerator;
 public:
     World(const glm::vec3& pos, TextureHandler& textureHandler);
     
@@ -36,7 +42,9 @@ public:
     void SetBlock(glm::vec3 pos, BlockType newBlockType);
 
     bool BlockInBounds(const glm::vec3& pos);
+    bool ChunkInBounds(const glm::vec2& pos);
     glm::vec3 GetBlockCoordinates(glm::vec3& pos);
+    glm::vec2 GetChunkPos(Chunk& chunk);
     Chunk& GetChunk(glm::vec3& pos);
     Block& GetBlock(glm::vec3& pos);
 };

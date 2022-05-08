@@ -43,7 +43,7 @@ void Game::ProcessInput(GLFWwindow* window) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    const float cameraSpeed = 10.0f * deltaTime;
+    const float cameraSpeed = 30.0f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         player.Move(FORWARDS, cameraSpeed);
     }
