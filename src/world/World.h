@@ -28,23 +28,28 @@ private:
     static const int Y_OFFSET = -100;
 
     NoiseGenerator noiseGenerator;
+
+    void InitializeChunks(const glm::vec3& pos);
+
+    void RemoveRedundantChunks();
+    void AddChunksX(int xn);
+    void AddChunksZ(int zn);
+
+    glm::vec2 GetChunkPos(glm::vec3& pos);
+    glm::vec2 GetChunkPos(Chunk& chunk);
+    Chunk& GetChunk(glm::vec3& pos);
+    glm::vec3 GetBlockCoordinates(glm::vec3& pos);
+
+    bool ChunkInBounds(const glm::vec2& pos);
 public:
     World(const glm::vec3& pos, TextureHandler& textureHandler);
     
-    void InitializeChunks(const glm::vec3& pos);
     void UpdateChunks(const glm::vec3& pos);
-    void AddChunks(int xl, int xh, int zl, int zh);
-    void AddChunksX(int xn);
-    void AddChunksZ(int zn);
-    void RemoveRedundantChunks();
     void Render(Renderer& renderer);
 
     void SetBlock(glm::vec3 pos, BlockType newBlockType);
 
     bool BlockInBounds(const glm::vec3& pos);
-    bool ChunkInBounds(const glm::vec2& pos);
-    glm::vec3 GetBlockCoordinates(glm::vec3& pos);
-    glm::vec2 GetChunkPos(Chunk& chunk);
-    Chunk& GetChunk(glm::vec3& pos);
+
     Block& GetBlock(glm::vec3& pos);
 };

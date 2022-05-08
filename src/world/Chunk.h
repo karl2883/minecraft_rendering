@@ -15,6 +15,7 @@ constexpr int CHUNK_SIZE_Z = 16;
 constexpr int CHUNK_VOLUME = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
 constexpr int CHUNK_LAYER_SIZE = CHUNK_SIZE_X * CHUNK_SIZE_Z;
 
+// I pretty much have to have a circular reference here (neighbour chunks), that's why forward declaration
 class World;
 
 class Chunk {
@@ -27,19 +28,21 @@ class Chunk {
         bool mesh_has_generated;
 
         World* world;
+
+        void Generate(NoiseGenerator& noiseGenerator);
+
+        bool NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction);
+        int GetDataPos(int x, int y, int z) const;
     public:
         Chunk(glm::vec3& pos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world);
-        void Generate(NoiseGenerator& noiseGenerator);
         void GenerateMesh(TextureHandler& textureHandler);
         
         bool InBounds(int x, int y, int z) const;
         bool OnBorder(int x, int y, int z) const;
         std::vector<glm::vec2> GetNeighbourChunkOffsets(int x, int y, int z) const;
-        bool NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction);
 
         bool MeshGenerated() { return mesh_has_generated; }
 
-        int GetDataPos(int x, int y, int z) const;
         Block& GetBlock(int x, int y, int z);
         glm::vec3& GetPos() { return pos; }
         glm::mat4& GetModel() { return model; }
