@@ -2,7 +2,6 @@
 
 #include <array>
 #include <functional>
-#include <noise/noise.h>
 #include "Block.h"
 #include "../gfx/TextureHandler.h"
 #include "ChunkMesh.h"
