@@ -49,17 +49,7 @@ void ChunkMesh::Clear() {
 }
 
 void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side, TextureHandler& textureHandler) {
-    std::vector<glm::vec2> coords;
-    switch(block.GetBlockType()) {
-    case BlockType::DIRT:
-        coords = textureHandler.GetDirtCoordinates(side);
-        break;
-    case BlockType::GRASS:
-        coords = textureHandler.GetGrassCoordinates(side);
-        break;
-    default:
-        throw "Unkonwn block to render!";
-    }
+    std::vector<glm::vec2> coords = textureHandler.GetTextureCoordinates(block.GetBlockType(), side);
 
     for (int i=side*6; i<(side+1)*6; i++) {
         for (int j=0; j<3; j++) {

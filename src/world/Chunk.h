@@ -14,6 +14,8 @@ constexpr int CHUNK_SIZE_Z = 16;
 constexpr int CHUNK_VOLUME = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
 constexpr int CHUNK_LAYER_SIZE = CHUNK_SIZE_X * CHUNK_SIZE_Z;
 
+constexpr int TREE_ODDS = 500;
+
 // I pretty much have to have a circular reference here (neighbour chunks), that's why forward declaration
 class World;
 
@@ -32,6 +34,10 @@ class Chunk {
 
         bool NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction);
         int GetDataPos(int x, int y, int z) const;
+
+        void FillAir();
+        void GenerateGround(NoiseGenerator& noiseGenerator);
+        void GenerateTrees(NoiseGenerator& noiseGenerator);
     public:
         Chunk(glm::vec3& pos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world);
         void GenerateMesh(TextureHandler& textureHandler);

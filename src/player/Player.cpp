@@ -77,7 +77,7 @@ void Player::SetBlock() {
                 }
                 ray.Advance(-RAY_STEP_DIST);
                 glm::vec3 prevpos = floored_vec3(ray.GetPos());
-                world.SetBlock(prevpos, BlockType::DIRT);
+                world.SetBlock(prevpos, BlockType::LEAVES);
                 break;
             }
             previousBlock = currentBlock;

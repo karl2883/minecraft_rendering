@@ -1,6 +1,7 @@
 #include "Chunk.h"
 #include <glm/gtx/string_cast.hpp>
 #include <vector>
+#include <stdlib.h>
 
 Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world) 
     :pos(xpos), mesh(textureHandler), model(1.0f), world(world)
@@ -11,7 +12,12 @@ Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, NoiseGenerator& no
 }
 
 void Chunk::Generate(NoiseGenerator& noiseGenerator) {
-    // fill everything with air first
+    FillAir();
+    GenerateGround(noiseGenerator);
+    GenerateTrees(noiseGenerator);
+}
+
+void Chunk::FillAir() {
     for (int x=0; x<CHUNK_SIZE_X; x++) {
         for (int y=0; y<CHUNK_SIZE_Y; y++) {
             for (int z=0; z<CHUNK_SIZE_Z; z++) {
@@ -20,7 +26,9 @@ void Chunk::Generate(NoiseGenerator& noiseGenerator) {
             }
         }
     }
-    // then generate each column with a height taken from a noise generator
+}
+
+void Chunk::GenerateGround(NoiseGenerator& noiseGenerator) {
     for (int x=0; x<CHUNK_SIZE_X; x++) {
         for (int z=0; z<CHUNK_SIZE_Z; z++) {
             double height = noiseGenerator.GetHeight(x, z, pos.x, pos.z);
@@ -29,10 +37,30 @@ void Chunk::Generate(NoiseGenerator& noiseGenerator) {
             if (height >= CHUNK_SIZE_Y) {
                 height = CHUNK_SIZE_Y - 1;
             }
-            for (int y=0; y<height; y++) {
-                GetBlock(x, y, z).SetBlockType(BlockType::DIRT);
+            for (int y=height-3; y<=height; y++) {
+                if (height >= 0) {
+                    GetBlock(x, y, z).SetBlockType(BlockType::DIRT);
+                }
+            }
+            for (int y=0; y<height-3; y++) {
+                GetBlock(x, y, z).SetBlockType(BlockType::STONE);
             }
             GetBlock(x, height, z).SetBlockType(BlockType::GRASS);
+        }
+    }
+}
+
+void Chunk::GenerateTrees(NoiseGenerator& noiseGenerator) {
+    for (int x=0; x<CHUNK_SIZE_X; x++) {
+        for (int z=0; z<CHUNK_SIZE_Z; z++) {
+            if (rand() / (double)RAND_MAX < (1/(double)TREE_ODDS)) {
+                int height = (int) noiseGenerator.GetHeight(x, z, pos.x, pos.z);
+                if (height + 5 < CHUNK_SIZE_Y) {
+                    for (int y=height; y<height+5; y++) {
+                        GetBlock(x, y, z).SetBlockType(BlockType::WOOD);
+                    }
+                }
+            }
         }
     }
 }

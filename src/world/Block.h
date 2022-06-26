@@ -3,8 +3,11 @@
 #include <glm/glm.hpp>
 
 enum BlockType {
+    STONE,
     GRASS,
     DIRT,
+    WOOD,
+    LEAVES,
     AIR
 };
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Texture.h"
 #include <GL/glew.h>
+#include "../world/Block.h"
 #include "stb_image.h"
 
 class TextureHandler {
@@ -15,10 +16,11 @@ private:
     int rows;
     int cols;
     int image_size; // quadratic
+
+    std::vector<glm::vec2> GetCoordinates(int row, int col) const;
 public:
     TextureHandler(char* grassTexturePath);
     Texture& GetTexture();
     // x/y coordinates between 0 and 1 for a texture in the atlas (for shader)
-    std::vector<glm::vec2> GetGrassCoordinates(int side) const;
-    std::vector<glm::vec2> GetDirtCoordinates(int side) const;
+    std::vector<glm::vec2> GetTextureCoordinates(BlockType blockType, int side);
 };

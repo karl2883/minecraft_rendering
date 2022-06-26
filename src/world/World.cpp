@@ -4,6 +4,8 @@
 World::World(const glm::vec3& pos, TextureHandler& textureHandler) 
 :textureHandler(textureHandler), noiseGenerator(2883)
 {
+    srand(noiseGenerator.GetSeed());
+
     x_low = (int) pos.x / CHUNK_SIZE_X - RENDER_DISTANCE;
     z_low = (int) pos.z / CHUNK_SIZE_Z - RENDER_DISTANCE;
     x_high = x_low + RENDER_DISTANCE*2;
@@ -65,6 +67,7 @@ void World::UpdateChunks(const glm::vec3& pos) {
     }
 
     // generate meshes for one chunk per frame (for smoothness)
+    // don't generate chunks that are not in bounds
     while (!mesh_generation_queue.empty() && !ChunkInBounds(mesh_generation_queue.front())) {
         mesh_generation_queue.pop();
     }

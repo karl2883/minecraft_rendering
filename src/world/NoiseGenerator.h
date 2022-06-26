@@ -18,5 +18,6 @@ private:
     double Noise(double x, double z);
 public:
     NoiseGenerator(int seed);
+    int GetSeed() { return seed; }
     double GetHeight(int x, int z, int chunkX, int chunkZ);
 };
