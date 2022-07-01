@@ -3,28 +3,24 @@
 #include <array>
 #include <functional>
 #include "Block.h"
+#include "Constants.h"
 #include "../gfx/TextureHandler.h"
 #include "ChunkMesh.h"
 #include "NoiseGenerator.h"
+#include "HeightMap.h"
 
-
-constexpr int CHUNK_SIZE_X = 16;
-constexpr int CHUNK_SIZE_Y = 128;
-constexpr int CHUNK_SIZE_Z = 16;
-constexpr int CHUNK_VOLUME = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
-constexpr int CHUNK_LAYER_SIZE = CHUNK_SIZE_X * CHUNK_SIZE_Z;
-
-constexpr int TREE_ODDS = 500;
 
 // I pretty much have to have a circular reference here (neighbour chunks), that's why forward declaration
 class World;
 
 class Chunk {
     private:
-        std::array<Block, CHUNK_VOLUME> data;
+        std::array<Block, WorldConstants::CHUNK_VOLUME> data;
         glm::vec3 pos;
         glm::mat4 model;
         ChunkMesh mesh;
+
+        HeightMap heightMap;
 
         bool mesh_has_generated;
 
@@ -36,8 +32,8 @@ class Chunk {
         int GetDataPos(int x, int y, int z) const;
 
         void FillAir();
-        void GenerateGround(NoiseGenerator& noiseGenerator);
-        void GenerateTrees(NoiseGenerator& noiseGenerator);
+        void GenerateGround();
+        void GenerateTrees();
     public:
         Chunk(glm::vec3& pos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world);
         void GenerateMesh(TextureHandler& textureHandler);

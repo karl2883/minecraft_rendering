@@ -24,8 +24,6 @@ private:
     std::queue<glm::vec2> mesh_generation_queue;
 
     TextureHandler& textureHandler;
-    static const int RENDER_DISTANCE = 6;
-    static const int Y_OFFSET = -100;
 
     NoiseGenerator noiseGenerator;
 

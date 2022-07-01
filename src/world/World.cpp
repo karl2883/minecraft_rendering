@@ -1,13 +1,15 @@
 #include "World.h"
 #include <glm/gtx/io.hpp>
 
+using namespace WorldConstants;
+
 World::World(const glm::vec3& pos, TextureHandler& textureHandler) 
 :textureHandler(textureHandler), noiseGenerator(2883)
 {
     srand(noiseGenerator.GetSeed());
 
-    x_low = (int) pos.x / CHUNK_SIZE_X - RENDER_DISTANCE;
-    z_low = (int) pos.z / CHUNK_SIZE_Z - RENDER_DISTANCE;
+    x_low = (int) pos.x / CHUNK_SIZE_XZ - RENDER_DISTANCE;
+    z_low = (int) pos.z / CHUNK_SIZE_XZ - RENDER_DISTANCE;
     x_high = x_low + RENDER_DISTANCE*2;
     z_high = z_low + RENDER_DISTANCE*2;
     InitializeChunks(pos);
@@ -17,7 +19,7 @@ void World::InitializeChunks(const glm::vec3& pos) {
     for (int i=x_low; i<=x_high; i++) {
         std::vector<Chunk> newVec {};
         for (int k=z_low; k<=z_high; k++) {
-            glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, Y_OFFSET, k*CHUNK_SIZE_Z);
+            glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_XZ, Y_OFFSET, k*CHUNK_SIZE_XZ);
             Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
             newVec.push_back(newChunk);
         }
@@ -39,8 +41,8 @@ void World::UpdateChunks(const glm::vec3& pos) {
     z_high_old = z_high; 
 
     // determine new bounds for the loaded chunks depending on the player position
-    x_low = (int) pos.x / CHUNK_SIZE_X - RENDER_DISTANCE;
-    z_low = (int) pos.z / CHUNK_SIZE_Z - RENDER_DISTANCE;
+    x_low = (int) pos.x / CHUNK_SIZE_XZ - RENDER_DISTANCE;
+    z_low = (int) pos.z / CHUNK_SIZE_XZ - RENDER_DISTANCE;
     x_high = x_low + RENDER_DISTANCE*2;
     z_high = z_low + RENDER_DISTANCE*2;
 
@@ -83,7 +85,7 @@ void World::AddChunksX(int xn) {
     std::vector<Chunk> newVec {};
     // Adding the chunks
     for (int k=z_low; k<=z_high; k++) {
-        glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_X, Y_OFFSET, k*CHUNK_SIZE_Z);
+        glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_XZ, Y_OFFSET, k*CHUNK_SIZE_XZ);
         Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
         newVec.push_back(newChunk);
     }
@@ -110,7 +112,7 @@ void World::AddChunksZ(int zn) {
     // Adding the chunks
     for (int i=x_low; i<=x_high; i++) {
         std::vector<Chunk>& vec = chunks[i-x_low];
-        glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_X, Y_OFFSET, zn*CHUNK_SIZE_Z);
+        glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_XZ, Y_OFFSET, zn*CHUNK_SIZE_XZ);
         Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
         if (zn < z_low_old) {
             vec.insert(vec.begin(), newChunk);
@@ -138,26 +140,26 @@ void World::AddChunksZ(int zn) {
 // remove all chunks which are outside of the x-low to x-high and z-low to z-high range,
 // using the queue
 void World::RemoveRedundantChunks() {
-    if (chunks[0][0].GetPos().x / CHUNK_SIZE_X < x_low) {
+    if (chunks[0][0].GetPos().x / CHUNK_SIZE_XZ < x_low) {
         chunks.erase(chunks.begin());
         for (Chunk& chunk: chunks[0]) {
             mesh_generation_queue.push(GetChunkPos(chunk));
         }
     }
-    if (chunks.back()[0].GetPos().x / CHUNK_SIZE_X > x_high) {
+    if (chunks.back()[0].GetPos().x / CHUNK_SIZE_XZ > x_high) {
         chunks.pop_back();
         for (Chunk& chunk: chunks.back()) {
             mesh_generation_queue.push(GetChunkPos(chunk));
         }
     }
     
-    if (chunks[0][0].GetPos().z / CHUNK_SIZE_Z < z_low) {
+    if (chunks[0][0].GetPos().z / CHUNK_SIZE_XZ < z_low) {
         for (std::vector<Chunk>& vec: chunks) {
             vec.erase(vec.begin());
             mesh_generation_queue.push(GetChunkPos(vec[0]));
         }
     }
-    if (chunks[0].back().GetPos().z / CHUNK_SIZE_Z > z_high) {
+    if (chunks[0].back().GetPos().z / CHUNK_SIZE_XZ > z_high) {
         for (std::vector<Chunk>& vec: chunks) {
             vec.pop_back();
             mesh_generation_queue.push(GetChunkPos(vec.back()));
@@ -179,8 +181,8 @@ void World::Render(Renderer& renderer) {
 
 // self-explanatory
 bool World::BlockInBounds(const glm::vec3& pos) {
-    return (x_low*CHUNK_SIZE_X <= pos.x && pos.x < (x_high+1)*CHUNK_SIZE_X &&
-            z_low*CHUNK_SIZE_Z <= pos.z && pos.z < (z_high+1)*CHUNK_SIZE_Z &&
+    return (x_low*CHUNK_SIZE_XZ <= pos.x && pos.x < (x_high+1)*CHUNK_SIZE_XZ &&
+            z_low*CHUNK_SIZE_XZ <= pos.z && pos.z < (z_high+1)*CHUNK_SIZE_XZ &&
             Y_OFFSET <= pos.y && pos.y < Y_OFFSET+CHUNK_SIZE_Y);
 }
 
@@ -212,10 +214,10 @@ void World::SetBlock(glm::vec3 pos, BlockType newBlockType) {
 
 // returns the block-coordinates in the pos, the block-coordinates are relative to the 0,0,0-edge of the chunk the block is in
 glm::vec3 World::GetBlockCoordinates(glm::vec3& pos) {
-    int bx = (int)pos.x % CHUNK_SIZE_X;
-    if (bx < 0) bx += CHUNK_SIZE_X;
-    int bz = (int)pos.z % CHUNK_SIZE_Z;
-    if (bz < 0) bz += CHUNK_SIZE_Z;
+    int bx = (int)pos.x % CHUNK_SIZE_XZ;
+    if (bx < 0) bx += CHUNK_SIZE_XZ;
+    int bz = (int)pos.z % CHUNK_SIZE_XZ;
+    if (bz < 0) bz += CHUNK_SIZE_XZ;
 
     return glm::vec3(bx, (int)pos.y-Y_OFFSET, bz);
 }
@@ -225,8 +227,8 @@ glm::vec2 World::GetChunkPos(glm::vec3& pos) {
     // a bit clunky but eh
     glm::vec3 blockCoords = GetBlockCoordinates(pos);
 
-    int cx = (pos.x - blockCoords.x) / CHUNK_SIZE_X;
-    int cz = (pos.z - blockCoords.z) / CHUNK_SIZE_Z;
+    int cx = (pos.x - blockCoords.x) / CHUNK_SIZE_XZ;
+    int cz = (pos.z - blockCoords.z) / CHUNK_SIZE_XZ;
 
     return glm::vec2(cx, cz);
 }
@@ -240,8 +242,8 @@ glm::vec2 World::GetChunkPos(Chunk& chunk) {
 Chunk& World::GetChunk(glm::vec3& pos) {
     glm::vec3 blockCoords = GetBlockCoordinates(pos);
 
-    int cx = (pos.x - blockCoords.x) / CHUNK_SIZE_X;
-    int cz = (pos.z - blockCoords.z) / CHUNK_SIZE_Z;
+    int cx = (pos.x - blockCoords.x) / CHUNK_SIZE_XZ;
+    int cz = (pos.z - blockCoords.z) / CHUNK_SIZE_XZ;
     
     Chunk& chunk = chunks[cx-x_low][cz-z_low];
     return chunk;
