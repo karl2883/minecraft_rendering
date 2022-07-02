@@ -5,7 +5,6 @@ TextureHandler::TextureHandler(char* grassTexturePath) {
     stbi_set_flip_vertically_on_load(true);  
     unsigned char* data = stbi_load(grassTexturePath, &width, &height, &nr_channels, 0);
 
-    // just assuming this for now
     format = GL_RGBA;
     rows = 10;
     cols = 10;
