@@ -1,11 +1,12 @@
 #include "ChunkGenerator.h"
+#include <cmath>
 
 using namespace WorldConstants;
 
 ChunkGenerator::ChunkGenerator(int seed)
 :noiseGenerator(seed)
 {
-    // ...? 
+    m_seed = seed;
 }
 
 void ChunkGenerator::GenerateChunk(Chunk& chunk) {
@@ -36,12 +37,83 @@ void ChunkGenerator::GenerateTrees(Chunk& chunk, HeightMap& heightMap) {
         for (int z=0; z<CHUNK_SIZE_XZ; z++) {
             if (rand() / (double)RAND_MAX < TREE_ODDS) {
                 int height = heightMap.GetHeight(x, z); 
-                if (height + 5 < CHUNK_SIZE_Y) {
-                    for (int y=height; y<height+5; y++) {
-                        chunk.GetBlock(x, y, z).SetBlockType(BlockType::WOOD);
+                glm::vec3 pos {chunk.GetPos().x+x, chunk.GetPos().y+height, chunk.GetPos().z+z};
+                Structure tree = CreateTree(pos);
+                if (DoesStructureFit(tree, chunk)) {
+                    BuildStructure(tree, chunk);   
+                }
+            }
+        }
+    }
+}
+
+bool ChunkGenerator::DoesStructureFit(Structure& structure, Chunk& chunk) {
+    glm::vec3& pos = structure.GetPos();
+    glm::vec3& size = structure.GetSize();
+    for (int x=pos.x; x<pos.x+size.x; x++) {
+        for (int y=pos.y; y<pos.y+size.y; y++) {
+            for (int z=pos.z; z<pos.z+size.z; z++) {
+                if (structure.IsBlock(x, y, z)) {
+                    glm::vec3 chunkPos = glm::vec3(x, y, z) - chunk.GetPos();
+                    if (chunk.InBounds(chunkPos.x, chunkPos.y, chunkPos.z)) {
+                        if (chunk.GetBlock(chunkPos.x, chunkPos.y, chunkPos.z).GetBlockType() != BlockType::AIR) {
+                            return false;
+                        }
+                    } else {
+                        // ...
                     }
                 }
             }
         }
     }
+    return true;
+}
+
+void ChunkGenerator::BuildStructure(Structure& structure, Chunk& chunk) {
+    glm::vec3& pos = structure.GetPos();
+    glm::vec3& size = structure.GetSize();
+    for (int x=pos.x; x<pos.x+size.x; x++) {
+        for (int y=pos.y; y<pos.y+size.y; y++) {
+            for (int z=pos.z; z<pos.z+size.z; z++) {
+                if (structure.IsBlock(x, y, z)) {
+                    glm::vec3 chunkPos = glm::vec3(x, y, z) - chunk.GetPos();
+                    if (chunk.InBounds(chunkPos.x, chunkPos.y, chunkPos.z)) {
+                        chunk.GetBlock(chunkPos.x, chunkPos.y, chunkPos.z).SetBlockType(structure.GetBlock(x, y, z));
+                    }
+                }
+            }
+        }
+    }
+}
+
+Structure ChunkGenerator::CreateTree(glm::vec3 pos) {
+    int log_size = 3 + std::abs((m_seed * ((int)pos.y ^ (int)pos.x) - ((int)pos.z >> 1))) % 3;
+
+    glm::vec3 size {5, log_size+3, 5};
+
+    Vector3D<BlockType> treeBlocks {size, BlockType::AIR};
+
+    // Creating the base leaves (gets edited later)
+    for (int y=log_size; y<log_size+2; y++) {
+        for (int x=0; x<size.x; x++) {
+            for (int z=0; z<size.z; z++) {
+                treeBlocks.Set(x, y, z, BlockType::LEAVES);
+            }
+        }
+    }
+
+    // Creating the log
+    for (int y=0; y<log_size+2; y++) {
+        treeBlocks.Set(2, y, 2, BlockType::WOOD);
+    }
+
+    // Creating the leaves top (cross)
+    int y = log_size+2;
+    treeBlocks.Set(2, y, 2, BlockType::LEAVES);
+    treeBlocks.Set(2, y, 1, BlockType::LEAVES);
+    treeBlocks.Set(2, y, 3, BlockType::LEAVES);
+    treeBlocks.Set(1, y, 2, BlockType::LEAVES);
+    treeBlocks.Set(3, y, 2, BlockType::LEAVES);
+
+    return Structure {pos, size, treeBlocks};
 }

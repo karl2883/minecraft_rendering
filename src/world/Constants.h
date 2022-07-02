@@ -10,5 +10,5 @@ namespace WorldConstants {
 
     constexpr int RENDER_DISTANCE = 6;
 
-    constexpr double TREE_ODDS = 1/500.0;
+    constexpr double TREE_ODDS = 1/200.0;
 }
