@@ -6,7 +6,7 @@ using namespace WorldConstants;
 ChunkGenerator::ChunkGenerator(int seed)
 :noiseGenerator(seed)
 {
-    m_seed = seed;
+    this->seed = seed;
 }
 
 void ChunkGenerator::GenerateChunk(Chunk& chunk) {
@@ -87,7 +87,7 @@ void ChunkGenerator::BuildStructure(Structure& structure, Chunk& chunk) {
 }
 
 Structure ChunkGenerator::CreateTree(glm::vec3 pos) {
-    int log_size = 3 + std::abs((m_seed * ((int)pos.y ^ (int)pos.x) - ((int)pos.z >> 1))) % 3;
+    int log_size = 3 + std::abs((seed * ((int)pos.y ^ (int)pos.x) - ((int)pos.z >> 1))) % 3;
 
     glm::vec3 size {5, log_size+3, 5};
 

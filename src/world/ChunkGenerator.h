@@ -8,7 +8,7 @@ class Chunk;
 
 class ChunkGenerator {
 private:
-    int m_seed;
+    int seed;
 
     NoiseGenerator noiseGenerator;
 
