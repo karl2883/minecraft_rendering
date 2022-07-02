@@ -4,10 +4,8 @@
 using namespace WorldConstants;
 
 World::World(const glm::vec3& pos, TextureHandler& textureHandler) 
-:textureHandler(textureHandler), noiseGenerator(2883)
+:textureHandler(textureHandler), generator(2883)
 {
-    srand(noiseGenerator.GetSeed());
-
     x_low = (int) pos.x / CHUNK_SIZE_XZ - RENDER_DISTANCE;
     z_low = (int) pos.z / CHUNK_SIZE_XZ - RENDER_DISTANCE;
     x_high = x_low + RENDER_DISTANCE*2;
@@ -20,7 +18,8 @@ void World::InitializeChunks(const glm::vec3& pos) {
         std::vector<Chunk> newVec {};
         for (int k=z_low; k<=z_high; k++) {
             glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_XZ, Y_OFFSET, k*CHUNK_SIZE_XZ);
-            Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
+            Chunk newChunk = Chunk(cpos, textureHandler, this);
+            generator.GenerateChunk(newChunk);
             newVec.push_back(newChunk);
         }
         chunks.push_back(newVec);
@@ -86,7 +85,8 @@ void World::AddChunksX(int xn) {
     // Adding the chunks
     for (int k=z_low; k<=z_high; k++) {
         glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_XZ, Y_OFFSET, k*CHUNK_SIZE_XZ);
-        Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
+        Chunk newChunk = Chunk(cpos, textureHandler, this);
+        generator.GenerateChunk(newChunk);
         newVec.push_back(newChunk);
     }
     // adding to 2d chunk list and redo meshes (adjacent chunks too)
@@ -113,7 +113,8 @@ void World::AddChunksZ(int zn) {
     for (int i=x_low; i<=x_high; i++) {
         std::vector<Chunk>& vec = chunks[i-x_low];
         glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_XZ, Y_OFFSET, zn*CHUNK_SIZE_XZ);
-        Chunk newChunk = Chunk(cpos, textureHandler, noiseGenerator, this);
+        Chunk newChunk = Chunk(cpos, textureHandler, this);
+        generator.GenerateChunk(newChunk);
         if (zn < z_low_old) {
             vec.insert(vec.begin(), newChunk);
         }

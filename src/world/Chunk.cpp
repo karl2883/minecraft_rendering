@@ -1,23 +1,15 @@
 #include "Chunk.h"
-#include <glm/gtx/string_cast.hpp>
-#include <vector>
-#include <stdlib.h>
 
 using namespace WorldConstants;
 
-Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world) 
-    :pos(xpos), mesh(textureHandler), model(1.0f), world(world), heightMap(xpos.x, xpos.z, noiseGenerator)
+Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, World* world) 
+    :pos(xpos), mesh(textureHandler), model(1.0f), world(world)
 {
     model = glm::translate(model, pos);
-    Generate(noiseGenerator);
+    FillAir();
     mesh_has_generated = false;
 }
 
-void Chunk::Generate(NoiseGenerator& noiseGenerator) {
-    FillAir();
-    GenerateGround();
-    GenerateTrees();
-}
 
 void Chunk::FillAir() {
     for (int x=0; x<CHUNK_SIZE_XZ; x++) {
@@ -30,50 +22,18 @@ void Chunk::FillAir() {
     }
 }
 
-void Chunk::GenerateGround() {
-    for (int x=0; x<CHUNK_SIZE_XZ; x++) {
-        for (int z=0; z<CHUNK_SIZE_XZ; z++) {
-            int height = heightMap.GetHeight(x, z);
-            for (int y=height-3; y<=height; y++) {
-                if (height >= 0) {
-                    GetBlock(x, y, z).SetBlockType(BlockType::DIRT);
-                }
-            }
-            for (int y=0; y<height-3; y++) {
-                GetBlock(x, y, z).SetBlockType(BlockType::STONE);
-            }
-            GetBlock(x, height, z).SetBlockType(BlockType::GRASS);
-        }
-    }
-}
-
-void Chunk::GenerateTrees() {
-    for (int x=0; x<CHUNK_SIZE_XZ; x++) {
-        for (int z=0; z<CHUNK_SIZE_XZ; z++) {
-            if (rand() / (double)RAND_MAX < TREE_ODDS) {
-                int height = heightMap.GetHeight(x, z); 
-                if (height + 5 < CHUNK_SIZE_Y) {
-                    for (int y=height; y<height+5; y++) {
-                        GetBlock(x, y, z).SetBlockType(BlockType::WOOD);
-                    }
-                }
-            }
-        }
-    }
-}
-
 void Chunk::GenerateMesh(TextureHandler& textureHandler) {
     mesh_has_generated = true;
     mesh.Clear();
     Block block;
     glm::vec3 bpos;
-    for (int i=0; i<CHUNK_SIZE_XZ; i++) {
-        for (int j=0; j<CHUNK_SIZE_Y; j++) {
-            for (int k=0; k<CHUNK_SIZE_XZ; k++) {
-                block = GetBlock(i, j, k);
-                bpos.x = i;
-                bpos.y = j;
-                bpos.z = k;
+    for (int x=0; x<CHUNK_SIZE_XZ; x++) {
+        for (int y=0; y<CHUNK_SIZE_Y; y++) {
+            for (int z=0; z<CHUNK_SIZE_XZ; z++) {
+                block = GetBlock(x, y, z);
+                bpos.x = x;
+                bpos.y = y;
+                bpos.z = z;
                 if (block.GetBlockType() != BlockType::AIR) {
                     for (int side=0; side<6; side++) {
                         if (NextBlockEmpty(block, bpos, side)) {

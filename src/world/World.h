@@ -2,6 +2,7 @@
 
 #include "Chunk.h"
 #include "../gfx/Renderer.h"
+#include "ChunkGenerator.h"
 #include "NoiseGenerator.h"
 #include <algorithm>
 #include <queue>
@@ -25,7 +26,7 @@ private:
 
     TextureHandler& textureHandler;
 
-    NoiseGenerator noiseGenerator;
+    ChunkGenerator generator;
 
     void InitializeChunks(const glm::vec3& pos);
 

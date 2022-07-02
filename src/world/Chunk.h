@@ -6,8 +6,6 @@
 #include "Constants.h"
 #include "../gfx/TextureHandler.h"
 #include "ChunkMesh.h"
-#include "NoiseGenerator.h"
-#include "HeightMap.h"
 
 
 // I pretty much have to have a circular reference here (neighbour chunks), that's why forward declaration
@@ -20,22 +18,16 @@ class Chunk {
         glm::mat4 model;
         ChunkMesh mesh;
 
-        HeightMap heightMap;
-
         bool mesh_has_generated;
 
         World* world;
-
-        void Generate(NoiseGenerator& noiseGenerator);
 
         bool NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction);
         int GetDataPos(int x, int y, int z) const;
 
         void FillAir();
-        void GenerateGround();
-        void GenerateTrees();
     public:
-        Chunk(glm::vec3& pos, TextureHandler& textureHandler, NoiseGenerator& noiseGenerator, World* world);
+        Chunk(glm::vec3& pos, TextureHandler& textureHandler, World* world);
         void GenerateMesh(TextureHandler& textureHandler);
         
         bool InBounds(int x, int y, int z) const;
