@@ -3,8 +3,8 @@
 
 using namespace WorldConstants;
 
-ChunkGenerator::ChunkGenerator(int seed)
-:noiseGenerator(seed)
+ChunkGenerator::ChunkGenerator(int seed, World* world)
+:noiseGenerator(seed), world(world)
 {
     this->seed = seed;
 }
@@ -12,6 +12,12 @@ ChunkGenerator::ChunkGenerator(int seed)
 void ChunkGenerator::GenerateChunk(Chunk& chunk) {
     HeightMap heightMap {(int)chunk.GetPos().x, (int)chunk.GetPos().z, noiseGenerator};
     GenerateGround(chunk, heightMap);
+    for (Structure& structure: structureOverhangs) {
+        glm::vec3 cpos = structure.GetPos()-chunk.GetPos();
+        if (chunk.InBounds(cpos.x, cpos.y, cpos.z)) {
+            BuildStructure(structure, chunk);
+        }
+    }
     GenerateTrees(chunk, heightMap);
 }
 
@@ -33,14 +39,16 @@ void ChunkGenerator::GenerateGround(Chunk& chunk, HeightMap& heightMap) {
 }
 
 void ChunkGenerator::GenerateTrees(Chunk& chunk, HeightMap& heightMap) {
-    for (int x=0; x<CHUNK_SIZE_XZ; x++) {
-        for (int z=0; z<CHUNK_SIZE_XZ; z++) {
+    for (int x=-4; x<CHUNK_SIZE_XZ; x++) {
+        for (int z=-4; z<CHUNK_SIZE_XZ; z++) {
             if (rand() / (double)RAND_MAX < TREE_ODDS) {
-                int height = heightMap.GetHeight(x, z); 
+                int height = noiseGenerator.GetHeight(x, z, chunk.GetPos().x, chunk.GetPos().z); 
                 glm::vec3 pos {chunk.GetPos().x+x, chunk.GetPos().y+height, chunk.GetPos().z+z};
                 Structure tree = CreateTree(pos);
                 if (DoesStructureFit(tree, chunk)) {
                     BuildStructure(tree, chunk);   
+                    std::vector<Structure> overhangs = tree.CreateCutoffSubStructures(chunk.GetPos());
+                    structureOverhangs.insert(structureOverhangs.end(), overhangs.begin(), overhangs.end());
                 }
             }
         }
@@ -54,13 +62,19 @@ bool ChunkGenerator::DoesStructureFit(Structure& structure, Chunk& chunk) {
         for (int y=pos.y; y<pos.y+size.y; y++) {
             for (int z=pos.z; z<pos.z+size.z; z++) {
                 if (structure.IsBlock(x, y, z)) {
-                    glm::vec3 chunkPos = glm::vec3(x, y, z) - chunk.GetPos();
+                    glm::vec3 pos {x, y, z};
+                    glm::vec3 chunkPos = pos - chunk.GetPos();
                     if (chunk.InBounds(chunkPos.x, chunkPos.y, chunkPos.z)) {
                         if (chunk.GetBlock(chunkPos.x, chunkPos.y, chunkPos.z).GetBlockType() != BlockType::AIR) {
                             return false;
                         }
                     } else {
-                        // ...
+                        if (world->BlockInBounds(pos)) {
+                            return false;
+                        }
+                        if (noiseGenerator.GetHeight(pos.x, pos.z)+Y_OFFSET >= pos.y) {
+                            return false;
+                        }
                     }
                 }
             }

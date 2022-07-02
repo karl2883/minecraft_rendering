@@ -4,10 +4,10 @@ NoiseGenerator::NoiseGenerator(int seedx) {
     seed = seedx;
 
     octaves = 7;
-    amplitude = 30;
-    smoothness = 235;
+    amplitude = 35;
+    smoothness = 130;
     heightOffset = 20;
-    roughness = 0.5;
+    roughness = 0.6;
 }
 
 // bit hacks no clue how this works
@@ -44,9 +44,10 @@ double NoiseGenerator::Noise(double x, double z) {
 }
 
 double NoiseGenerator::GetHeight(int x, int z, int chunkX, int chunkZ) {
-    x = x + chunkX;
-    z = z + chunkZ;
-    
+    return GetHeight(x + chunkX, z + chunkZ);
+}
+
+double NoiseGenerator::GetHeight(int x, int z) {
     double totalValue = 0.0f;
 
     for (int octave=0; octave<octaves-1; octave++) {

@@ -4,7 +4,7 @@
 using namespace WorldConstants;
 
 World::World(const glm::vec3& pos, TextureHandler& textureHandler) 
-:textureHandler(textureHandler), generator(2883)
+:textureHandler(textureHandler), generator(2883, this)
 {
     x_low = (int) pos.x / CHUNK_SIZE_XZ - RENDER_DISTANCE;
     z_low = (int) pos.z / CHUNK_SIZE_XZ - RENDER_DISTANCE;

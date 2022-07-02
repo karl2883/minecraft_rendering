@@ -1,6 +1,7 @@
 #pragma once
 
 class Chunk;
+class World;
 
 #include "Structure.h"
 #include "NoiseGenerator.h"
@@ -12,6 +13,10 @@ private:
 
     NoiseGenerator noiseGenerator;
 
+    std::vector<Structure> structureOverhangs;
+
+    World* world;
+
     void GenerateGround(Chunk& chunk, HeightMap& heightMap);
     void GenerateTrees(Chunk& chunk, HeightMap& heightMap);
 
@@ -19,8 +24,9 @@ private:
     bool DoesStructureFit(Structure& structure, Chunk& chunk);
     void BuildStructure(Structure& structure, Chunk& chunk);
 public:
-    ChunkGenerator(int seed);
+    ChunkGenerator(int seed, World* world);
     void GenerateChunk(Chunk& chunk);
 };
 
 #include "Chunk.h"
+#include "World.h"

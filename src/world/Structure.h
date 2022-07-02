@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Block.h"
+#include "Constants.h"
 #include "glm/glm.hpp"
 #include "../util/Vector3D.h"
 
@@ -12,8 +13,9 @@ private:
     Vector3D<BlockType> blocks;
 public:
     Structure(glm::vec3 pos, glm::vec3 size, Vector3D<BlockType> blocks);
-    Structure(Structure& structure, int cutoff_x, int cutoff_z);
     
+    std::vector<Structure> CreateCutoffSubStructures(glm::vec3& original_cpos);
+
     bool IsBlock(int x, int y, int z);
     BlockType GetBlock(int x, int y, int z);
 
