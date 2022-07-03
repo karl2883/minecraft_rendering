@@ -28,12 +28,16 @@ GLFWwindow* setup(int width, int height, GLDEBUGPROC debugfun, GLFWframebuffersi
     //glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, false);
 
     glEnable(GL_DEPTH_TEST);
-
-    glViewport(0, 0, width, height);
-    glfwSetFramebufferSizeCallback(window, resizefun);
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0.0f, 1.0f);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+    glViewport(0, 0, width, height);
+    glfwSetFramebufferSizeCallback(window, resizefun);
 
     // change to 0 for unlimited FPS (may make noise for graphics card LOL)
     glfwSwapInterval(0);

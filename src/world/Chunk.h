@@ -16,7 +16,8 @@ class Chunk {
         std::array<Block, WorldConstants::CHUNK_VOLUME> data;
         glm::vec3 pos;
         glm::mat4 model;
-        ChunkMesh mesh;
+        ChunkMesh solid_mesh;
+        ChunkMesh transparent_mesh;
 
         bool mesh_has_generated;
 
@@ -39,9 +40,10 @@ class Chunk {
         Block& GetBlock(int x, int y, int z);
         glm::vec3& GetPos() { return pos; }
         glm::mat4& GetModel() { return model; }
-        ChunkMesh& GetMesh() { return mesh; }
+        ChunkMesh& GetSolidMesh() { return solid_mesh; }
+        ChunkMesh& GetTransparentMesh() { return transparent_mesh; }
 
-        void Delete() { mesh.GetVAO().Delete(); }
+        void Delete() { solid_mesh.GetVAO().Delete(); }
 };
 
 #include "World.h"

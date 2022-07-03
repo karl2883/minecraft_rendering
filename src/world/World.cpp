@@ -174,7 +174,14 @@ void World::Render(Renderer& renderer) {
             // it can happen that the mesh isn't generated because with the queue only one mesh generates per frame
             // in that case the program would crash when you try to render, so check before
             if (chunk.MeshGenerated()) {
-                renderer.RenderMesh(chunk.GetMesh().GetVAO(), chunk.GetMesh().GetVertexCount(), chunk.GetModel());
+                renderer.RenderMesh(chunk.GetSolidMesh().GetVAO(), chunk.GetSolidMesh().GetVertexCount(), chunk.GetModel());
+            }
+        }
+    }
+    for (std::vector<Chunk>& vec: chunks) {
+        for (Chunk& chunk: vec) {
+            if (chunk.MeshGenerated()) {
+                renderer.RenderMesh(chunk.GetTransparentMesh().GetVAO(), chunk.GetTransparentMesh().GetVertexCount(), chunk.GetModel());
             }
         }
     }

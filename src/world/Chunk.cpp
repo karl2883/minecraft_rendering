@@ -3,7 +3,7 @@
 using namespace WorldConstants;
 
 Chunk::Chunk(glm::vec3& xpos, TextureHandler& textureHandler, World* world) 
-    :pos(xpos), mesh(textureHandler), model(1.0f), world(world)
+    :pos(xpos), solid_mesh(textureHandler), transparent_mesh(textureHandler), model(1.0f), world(world)
 {
     model = glm::translate(model, pos);
     FillAir();
@@ -24,7 +24,8 @@ void Chunk::FillAir() {
 
 void Chunk::GenerateMesh(TextureHandler& textureHandler) {
     mesh_has_generated = true;
-    mesh.Clear();
+    solid_mesh.Clear();
+    transparent_mesh.Clear();
     Block block;
     glm::vec3 bpos;
     for (int x=0; x<CHUNK_SIZE_XZ; x++) {
@@ -37,14 +38,19 @@ void Chunk::GenerateMesh(TextureHandler& textureHandler) {
                 if (block.GetBlockType() != BlockType::AIR) {
                     for (int side=0; side<6; side++) {
                         if (NextBlockTransparent(block, bpos, side)) {
-                            mesh.AddFace(block, bpos, side, textureHandler);
+                            if (block.IsTransparent()) {
+                                transparent_mesh.AddFace(block, bpos, side, textureHandler);
+                            } else {
+                                solid_mesh.AddFace(block, bpos, side, textureHandler);
+                            }
                         }
                     }
                 }
             }
         }
     }
-    mesh.BuildMesh();
+    solid_mesh.BuildMesh();
+    transparent_mesh.BuildMesh();
 }
 
 bool Chunk::NextBlockTransparent(const Block& block, const glm::vec3& bpos, int direction) {

@@ -58,7 +58,6 @@ double NoiseGenerator::GetHeight(int x, int z) {
     }
 
     int value = (((totalValue/2.1) + 1.2) * amplitude) + heightOffset;
-    std::cout << value << std::endl;
     return value > 0 ? value : 1;
 }
 
