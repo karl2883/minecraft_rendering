@@ -22,7 +22,7 @@ class Chunk {
 
         World* world;
 
-        bool NextBlockEmpty(const Block& block, const glm::vec3& pos, int direction);
+        bool NextBlockTransparent(const Block& block, const glm::vec3& pos, int direction);
         int GetDataPos(int x, int y, int z) const;
 
         void FillAir();

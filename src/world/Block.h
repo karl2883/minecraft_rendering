@@ -12,11 +12,17 @@ enum BlockType {
 class Block {
 private:
     BlockType blockType;
+
+    bool isTransparent;
+
+    void UpdateAttributes();
 public:
     Block() {};
-    Block(BlockType nBlockType) { blockType = nBlockType; }
+    Block(BlockType nBlockType);
 
     BlockType GetBlockType() const { return blockType; }
-    void SetBlockType(BlockType nBlockType) { blockType = nBlockType; }
+    void SetBlockType(BlockType nBlockType);
+
+    bool IsTransparent() const { return isTransparent; }
 };
 
