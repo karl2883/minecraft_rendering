@@ -38,7 +38,7 @@ void Chunk::GenerateMesh(TextureHandler& textureHandler) {
                 if (block.GetBlockType() != BlockType::AIR) {
                     for (int side=0; side<6; side++) {
                         if (NextBlockTransparent(block, bpos, side)) {
-                            if (block.IsTransparent()) {
+                            if (block.IsTransparent() && block.GetBlockType() != BlockType::LEAVES) {
                                 transparent_mesh.AddFace(block, bpos, side, textureHandler);
                             } else {
                                 solid_mesh.AddFace(block, bpos, side, textureHandler);
