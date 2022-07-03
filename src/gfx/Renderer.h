@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "TextureHandler.h"
+#include "../world/Constants.h"
 #include "../model/VertexArray.h"
 #include "../player/Camera.h"
 #include "Texture.h"

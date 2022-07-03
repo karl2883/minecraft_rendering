@@ -48,7 +48,10 @@ void Renderer::RenderMesh(const VertexArray& vao, int verticeCount, const glm::m
     // model is the model transformation matrix
     shader.Use();
     shader.SetInt("texture1", 0);
+    shader.SetInt("FogStart", WorldConstants::FOG_START);
+    shader.SetInt("FogEnd", WorldConstants::FOG_END);
     shader.SetMat4("MVP", VP * model);
+    shader.SetMat4("MV", view * model);
     glActiveTexture(GL_TEXTURE0);
     vao.Bind();
     textureHandler.GetTexture().Bind();

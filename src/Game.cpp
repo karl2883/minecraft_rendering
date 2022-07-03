@@ -131,6 +131,9 @@ void Game::Run() {
         world.UpdateChunks(player.GetPos());
         // output how much fps we have
         timeSum += deltaTime;
+        if (deltaTime > 0.1) {
+            std::cout << "HUGE time: " << deltaTime << std::endl;
+        }
         frameCount++;
         if (frameCount == 120) {
             std::cout << 1.0f / (timeSum / 120.0f) << " FPS"<< std::endl;

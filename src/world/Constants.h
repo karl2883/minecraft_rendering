@@ -8,7 +8,10 @@ namespace WorldConstants {
 
     constexpr int Y_OFFSET = -100;
 
-    constexpr int RENDER_DISTANCE = 6;
+    constexpr int RENDER_DISTANCE = 9;
+
+    constexpr int FOG_END = (RENDER_DISTANCE-1) * CHUNK_SIZE_XZ;
+    constexpr int FOG_START = FOG_END - 10;
 
     constexpr int WATER_LEVEL = 64;
 

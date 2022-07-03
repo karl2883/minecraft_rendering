@@ -10,7 +10,7 @@
 
 class World {
 private:
-    std::vector<std::vector<Chunk>> chunks;
+    std::vector<std::vector<Chunk*>> chunks;
 
     int x_low_old;
     int x_high_old;
@@ -22,6 +22,7 @@ private:
     int z_low;
     int z_high;
 
+    std::queue<glm::vec2> chunk_generation_queue;
     std::queue<glm::vec2> mesh_generation_queue;
 
     TextureHandler& textureHandler;

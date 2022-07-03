@@ -1,4 +1,5 @@
 #include "World.h"
+#include <chrono>
 #include <glm/gtx/io.hpp>
 
 using namespace WorldConstants;
@@ -15,18 +16,18 @@ World::World(const glm::vec3& pos, TextureHandler& textureHandler)
 
 void World::InitializeChunks(const glm::vec3& pos) {
     for (int i=x_low; i<=x_high; i++) {
-        std::vector<Chunk> newVec {};
+        std::vector<Chunk*> newVec {};
         for (int k=z_low; k<=z_high; k++) {
             glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_XZ, Y_OFFSET, k*CHUNK_SIZE_XZ);
-            Chunk newChunk = Chunk(cpos, textureHandler, this);
-            generator.GenerateChunk(newChunk);
+            Chunk* newChunk = new Chunk(cpos, textureHandler, this);
+            generator.GenerateChunk(*newChunk);
             newVec.push_back(newChunk);
         }
         chunks.push_back(newVec);
     }
-    for (std::vector<Chunk>& vec: chunks) {
-        for (Chunk& chunk: vec) {
-            chunk.GenerateMesh(textureHandler);
+    for (std::vector<Chunk*>& vec: chunks) {
+        for (Chunk* chunk: vec) {
+            chunk->GenerateMesh(textureHandler);
         }
     }
 }
@@ -74,19 +75,31 @@ void World::UpdateChunks(const glm::vec3& pos) {
     }
     if (!mesh_generation_queue.empty()) {
         glm::vec2& generated_mesh_pos = mesh_generation_queue.front();
-        chunks[generated_mesh_pos.x-x_low][generated_mesh_pos.y-z_low].GenerateMesh(textureHandler);
+        chunks[generated_mesh_pos.x-x_low][generated_mesh_pos.y-z_low]->GenerateMesh(textureHandler);
         mesh_generation_queue.pop();
     }
+
+    while (!chunk_generation_queue.empty() && !ChunkInBounds(chunk_generation_queue.front())) {
+        chunk_generation_queue.pop();
+    }
+    if (!chunk_generation_queue.empty()) {
+        glm::vec2& generated_chunk_pos = chunk_generation_queue.front();
+        Chunk* chunk = chunks[generated_chunk_pos.x-x_low][generated_chunk_pos.y-z_low];
+        generator.GenerateChunk(*chunk);
+        mesh_generation_queue.push(generated_chunk_pos);
+        chunk_generation_queue.pop();
+    }
+
 }
 
 // add a row of chunks in x direction where xn is the x position of the row
 void World::AddChunksX(int xn) {
-    std::vector<Chunk> newVec {};
+    std::vector<Chunk*> newVec {};
     // Adding the chunks
     for (int k=z_low; k<=z_high; k++) {
+        chunk_generation_queue.push(glm::vec2(xn, k));
         glm::vec3 cpos = glm::vec3(xn*CHUNK_SIZE_XZ, Y_OFFSET, k*CHUNK_SIZE_XZ);
-        Chunk newChunk = Chunk(cpos, textureHandler, this);
-        generator.GenerateChunk(newChunk);
+        Chunk* newChunk = new Chunk(cpos, textureHandler, this);
         newVec.push_back(newChunk);
     }
     // adding to 2d chunk list and redo meshes (adjacent chunks too)
@@ -111,10 +124,10 @@ void World::AddChunksX(int xn) {
 void World::AddChunksZ(int zn) {
     // Adding the chunks
     for (int i=x_low; i<=x_high; i++) {
-        std::vector<Chunk>& vec = chunks[i-x_low];
+        chunk_generation_queue.push(glm::vec2(i, zn));
+        std::vector<Chunk*>& vec = chunks[i-x_low];
         glm::vec3 cpos = glm::vec3(i*CHUNK_SIZE_XZ, Y_OFFSET, zn*CHUNK_SIZE_XZ);
-        Chunk newChunk = Chunk(cpos, textureHandler, this);
-        generator.GenerateChunk(newChunk);
+        Chunk* newChunk = new Chunk(cpos, textureHandler, this);
         if (zn < z_low_old) {
             vec.insert(vec.begin(), newChunk);
         }
@@ -126,13 +139,13 @@ void World::AddChunksZ(int zn) {
     if (zn < z_low_old) {
         for (int x=x_low; x<=x_high; x++) {
             for (int z=zn; z<=z_low_old; z++) {
-                mesh_generation_queue.push(glm::vec2(x, z));
+                chunk_generation_queue.push(glm::vec2(x, z));
             }
         }
     } else {
         for (int x=x_low; x<=x_high; x++) {
             for (int z=z_high_old; z<=zn; z++) {
-                mesh_generation_queue.push(glm::vec2(x, z));
+                chunk_generation_queue.push(glm::vec2(x, z));
             }
         }
     }
@@ -141,47 +154,47 @@ void World::AddChunksZ(int zn) {
 // remove all chunks which are outside of the x-low to x-high and z-low to z-high range,
 // using the queue
 void World::RemoveRedundantChunks() {
-    if (chunks[0][0].GetPos().x / CHUNK_SIZE_XZ < x_low) {
+    if (chunks[0][0]->GetPos().x / CHUNK_SIZE_XZ < x_low) {
         chunks.erase(chunks.begin());
-        for (Chunk& chunk: chunks[0]) {
-            mesh_generation_queue.push(GetChunkPos(chunk));
+        for (Chunk* chunk: chunks[0]) {
+            mesh_generation_queue.push(GetChunkPos(*chunk));
         }
     }
-    if (chunks.back()[0].GetPos().x / CHUNK_SIZE_XZ > x_high) {
+    if (chunks.back()[0]->GetPos().x / CHUNK_SIZE_XZ > x_high) {
         chunks.pop_back();
-        for (Chunk& chunk: chunks.back()) {
-            mesh_generation_queue.push(GetChunkPos(chunk));
+        for (Chunk* chunk: chunks.back()) {
+            mesh_generation_queue.push(GetChunkPos(*chunk));
         }
     }
     
-    if (chunks[0][0].GetPos().z / CHUNK_SIZE_XZ < z_low) {
-        for (std::vector<Chunk>& vec: chunks) {
+    if (chunks[0][0]->GetPos().z / CHUNK_SIZE_XZ < z_low) {
+        for (std::vector<Chunk*>& vec: chunks) {
             vec.erase(vec.begin());
-            mesh_generation_queue.push(GetChunkPos(vec[0]));
+            mesh_generation_queue.push(GetChunkPos(*vec[0]));
         }
     }
-    if (chunks[0].back().GetPos().z / CHUNK_SIZE_XZ > z_high) {
-        for (std::vector<Chunk>& vec: chunks) {
+    if (chunks[0].back()->GetPos().z / CHUNK_SIZE_XZ > z_high) {
+        for (std::vector<Chunk*>& vec: chunks) {
             vec.pop_back();
-            mesh_generation_queue.push(GetChunkPos(vec.back()));
+            mesh_generation_queue.push(GetChunkPos(*vec.back()));
         }
     }
 }
 
 void World::Render(Renderer& renderer) {
-    for (std::vector<Chunk>& vec: chunks) {
-        for (Chunk& chunk: vec) {
+    for (std::vector<Chunk*>& vec: chunks) {
+        for (Chunk* chunk: vec) {
             // it can happen that the mesh isn't generated because with the queue only one mesh generates per frame
             // in that case the program would crash when you try to render, so check before
-            if (chunk.MeshGenerated()) {
-                renderer.RenderMesh(chunk.GetSolidMesh().GetVAO(), chunk.GetSolidMesh().GetVertexCount(), chunk.GetModel());
+            if (chunk->MeshGenerated()) {
+                renderer.RenderMesh(chunk->GetSolidMesh().GetVAO(), chunk->GetSolidMesh().GetVertexCount(), chunk->GetModel());
             }
         }
     }
-    for (std::vector<Chunk>& vec: chunks) {
-        for (Chunk& chunk: vec) {
-            if (chunk.MeshGenerated()) {
-                renderer.RenderMesh(chunk.GetTransparentMesh().GetVAO(), chunk.GetTransparentMesh().GetVertexCount(), chunk.GetModel());
+    for (std::vector<Chunk*>& vec: chunks) {
+        for (Chunk* chunk: vec) {
+            if (chunk->MeshGenerated()) {
+                renderer.RenderMesh(chunk->GetTransparentMesh().GetVAO(), chunk->GetTransparentMesh().GetVertexCount(), chunk->GetModel());
             }
         }
     }
@@ -253,7 +266,7 @@ Chunk& World::GetChunk(glm::vec3& pos) {
     int cx = (pos.x - blockCoords.x) / CHUNK_SIZE_XZ;
     int cz = (pos.z - blockCoords.z) / CHUNK_SIZE_XZ;
     
-    Chunk& chunk = chunks[cx-x_low][cz-z_low];
+    Chunk& chunk = *chunks[cx-x_low][cz-z_low];
     return chunk;
 }
 
