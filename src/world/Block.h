@@ -6,6 +6,7 @@ enum BlockType {
     DIRT,
     WOOD,
     LEAVES,
+    WATER,
     AIR
 };
 

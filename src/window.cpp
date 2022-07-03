@@ -32,6 +32,9 @@ GLFWwindow* setup(int width, int height, GLDEBUGPROC debugfun, GLFWframebuffersi
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, resizefun);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // change to 0 for unlimited FPS (may make noise for graphics card LOL)
     glfwSwapInterval(0);
 

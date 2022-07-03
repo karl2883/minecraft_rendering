@@ -1,12 +1,13 @@
 #include "NoiseGenerator.h"
+#include <iostream>
 
 NoiseGenerator::NoiseGenerator(int seedx) {
     seed = seedx;
 
     octaves = 7;
-    amplitude = 35;
+    amplitude = 40;
     smoothness = 130;
-    heightOffset = 20;
+    heightOffset = 25;
     roughness = 0.6;
 }
 
@@ -57,6 +58,7 @@ double NoiseGenerator::GetHeight(int x, int z) {
     }
 
     int value = (((totalValue/2.1) + 1.2) * amplitude) + heightOffset;
+    std::cout << value << std::endl;
     return value > 0 ? value : 1;
 }
 

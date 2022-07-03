@@ -34,6 +34,11 @@ void ChunkGenerator::GenerateGround(Chunk& chunk, HeightMap& heightMap) {
                 chunk.GetBlock(x, y, z).SetBlockType(BlockType::STONE);
             }
             chunk.GetBlock(x, height, z).SetBlockType(BlockType::GRASS);
+
+            // fill with water if below water level
+            for (int y=height+1; y<=64; y++) {
+                chunk.GetBlock(x, y, z).SetBlockType(BlockType::WATER);
+            }
         }
     }
 }

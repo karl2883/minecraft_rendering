@@ -35,6 +35,8 @@ std::vector<glm::vec2> TextureHandler::GetTextureCoordinates(BlockType blockType
         }
     case BlockType::LEAVES:
         return GetCoordinates(0, 9);
+    case BlockType::WATER:
+        return GetCoordinates(1, 0);
     default:
         throw "Unknown block type! (texture manager)";
     }

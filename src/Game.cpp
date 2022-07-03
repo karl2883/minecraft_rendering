@@ -89,9 +89,8 @@ void Game::UpdateEvents() {
 }
 
 Game::Game(GLFWwindow* win) 
-    // sorry for hardcoded paths
     :shader("src/gfx/Shaders/VertexShader.vs", "src/gfx/Shaders/FragmentShader.fs"),
-    textureHandler((char*)"pixelartattempt/grass.png"),
+    textureHandler((char*)"pixelartattempt/textureatlas.png"),
     world(glm::vec3(0.0f, 0.0f, 3.0f), textureHandler),
     player(glm::vec3(0.0f, 0.0f, 3.0f), world),
     renderer(win, shader, player.GetCamera(), 800, 600, 45.0f, textureHandler)

@@ -10,5 +10,7 @@ namespace WorldConstants {
 
     constexpr int RENDER_DISTANCE = 6;
 
+    constexpr int WATER_LEVEL = 64;
+
     constexpr double TREE_ODDS = 1/200.0;
 }

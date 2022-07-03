@@ -11,7 +11,7 @@ void Block::SetBlockType(BlockType nBlockType) {
 }
 
 void Block::UpdateAttributes() {
-    if (blockType == BlockType::AIR || blockType == BlockType::LEAVES) {
+    if (blockType == BlockType::AIR || blockType == BlockType::LEAVES || blockType == BlockType::WATER) {
         isTransparent = true;
     } else {
         isTransparent = false;
