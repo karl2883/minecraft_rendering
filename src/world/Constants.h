@@ -8,7 +8,7 @@ namespace WorldConstants {
 
     constexpr int Y_OFFSET = -100;
 
-    constexpr int RENDER_DISTANCE = 9;
+    constexpr int RENDER_DISTANCE = 6;
 
     constexpr int WATER_LEVEL = 64;
 

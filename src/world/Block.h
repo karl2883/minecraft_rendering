@@ -15,6 +15,7 @@ private:
     BlockType blockType;
 
     bool isTransparent;
+    bool isFullyTransparent;
 
     void UpdateAttributes();
 public:
@@ -25,5 +26,6 @@ public:
     void SetBlockType(BlockType nBlockType);
 
     bool IsTransparent() const { return isTransparent; }
+    bool IsFullyTransparent() const { return isFullyTransparent; }
 };
 

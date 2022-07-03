@@ -49,7 +49,6 @@ std::vector<Structure> Structure::CreateCutoffSubStructures(glm::vec3& original_
         }
     }
 
-    std::cout << subsection_structures.size() << std::endl;
     return subsection_structures;
 }
 

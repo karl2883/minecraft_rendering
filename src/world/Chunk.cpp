@@ -79,12 +79,14 @@ bool Chunk::NextBlockTransparent(const Block& block, const glm::vec3& bpos, int 
     }
     if (InBounds(x, y, z)) {
         Block& nextBlock = GetBlock(x, y, z);
-        return nextBlock.IsTransparent() && block.GetBlockType() != nextBlock.GetBlockType();
+        return (nextBlock.IsTransparent() && block.GetBlockType() != nextBlock.GetBlockType()) || nextBlock.IsFullyTransparent();
     } else {
         if (direction != 0 && direction != 5) {
             glm::vec3 abs_bpos = glm::vec3(x, y, z) + pos;
             if (world->BlockInBounds(abs_bpos)) {
                 if (world->GetBlock(abs_bpos).IsTransparent() && block.GetBlockType() != world->GetBlock(abs_bpos).GetBlockType()) {
+                    return true;
+                } else if (world->GetBlock(abs_bpos).IsFullyTransparent()) {
                     return true;
                 } else return false;                
             } else return false;
