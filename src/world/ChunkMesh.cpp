@@ -54,6 +54,9 @@ void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side, Text
     for (int i=side*6; i<(side+1)*6; i++) {
         for (int j=0; j<3; j++) {
             vertices.push_back(cubeVertices[i*6+j]+pos[j]+0.5);
+            if (block.GetBlockType() == BlockType::WATER && side == 0 && j == 1) {
+                vertices[vertices.size()-1] -= 3.0f/16.0f;
+            }
         }
         glm::vec2 vertexCoords;
         switch(i-(side*6)) {
@@ -63,7 +66,6 @@ void ChunkMesh::AddFace(const Block& block, const glm::vec3& pos, int side, Text
             case 3: vertexCoords = coords[3]; break;
             case 4: vertexCoords = coords[1]; break;
             case 5: vertexCoords = coords[0]; break;
-            default: std::cout << "what" << std::endl;
         }
         vertices.push_back(vertexCoords[0]);
         vertices.push_back(vertexCoords[1]);
