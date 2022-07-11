@@ -4,6 +4,7 @@
 #include <iostream>
 #include "gfx/Renderer.h"
 #include "gfx/Shader.h"
+#include "gui/Gui.h"
 #include "player/Camera.h"
 #include "player/Player.h"
 #include "world/World.h"
@@ -17,9 +18,9 @@ private:
     int width;
     int height;
 
-    Shader shader;
-
     TextureHandler textureHandler;
+
+    GUI gui;
 
     World world;
 

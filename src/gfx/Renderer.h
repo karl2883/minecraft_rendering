@@ -18,7 +18,8 @@ private:
     // e.g. 45°
     float fov;
 
-    Shader& shader;
+    Shader shader;
+    Shader guiShader;
 
     Camera& camera;
 
@@ -35,7 +36,7 @@ private:
 
     void UpdateProjection();
 public:
-    Renderer(GLFWwindow* window, Shader& shader, Camera& camera, int width, int height, float fov, TextureHandler& textureHandler);
+    Renderer(GLFWwindow* window, Camera& camera, int width, int height, float fov, TextureHandler& textureHandler);
 
     void SetShader(const Shader& shader);
     void Resize(int width, int height);
@@ -44,7 +45,9 @@ public:
     void UpdateView();
 
     void Clear();
+    void ClearDepthBuffer();
     void RenderMesh(const VertexArray& vao, int verticeCount, const glm::mat4& model);
+    void RenderGUIMesh(Texture& texture, const VertexArray& vao, int verticeCount, const glm::mat4& model);
     void Update();
 
     TextureHandler& GetTextureHandler() const { return textureHandler; }

@@ -2,9 +2,10 @@
 #include <chrono>
 
 // paramenters with "n" at the start to avoid "width = width;"
-Renderer::Renderer(GLFWwindow* newwindow, Shader& shader, Camera& camera, int nwidth, int nheight, float nfov, TextureHandler& textureHandler)
+Renderer::Renderer(GLFWwindow* newwindow, Camera& camera, int nwidth, int nheight, float nfov, TextureHandler& textureHandler)
     :camera(camera),
-    shader(shader),
+    shader("src/gfx/Shaders/VertexShader.vs", "src/gfx/Shaders/FragmentShader.fs"),
+    guiShader("src/gfx/Shaders/VertexShaderGUI.vs", "src/gfx/Shaders/FragmentShaderGUI.fs"),
     textureHandler(textureHandler)
 {
     window = newwindow;
@@ -43,6 +44,10 @@ void Renderer::Clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Renderer::ClearDepthBuffer() {
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
 void Renderer::RenderMesh(const VertexArray& vao, int verticeCount, const glm::mat4& model) {
     // vao is the model out of vertices
     // model is the model transformation matrix
@@ -55,6 +60,17 @@ void Renderer::RenderMesh(const VertexArray& vao, int verticeCount, const glm::m
     glActiveTexture(GL_TEXTURE0);
     vao.Bind();
     textureHandler.GetTexture().Bind();
+
+    glDrawArrays(GL_TRIANGLES, 0, verticeCount);
+}
+
+void Renderer::RenderGUIMesh(Texture& texture, const VertexArray& vao, int verticeCount, const glm::mat4& model) {
+    guiShader.Use();
+    guiShader.SetInt("texture1", 0);
+    guiShader.SetMat4("M", model);
+    glActiveTexture(GL_TEXTURE0);
+    vao.Bind();
+    texture.Bind();
 
     glDrawArrays(GL_TRIANGLES, 0, verticeCount);
 }
