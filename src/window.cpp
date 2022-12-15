@@ -2,8 +2,19 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+void error_callback( int error, const char *msg ) {
+    std::string s;
+    s = " [" + std::to_string(error) + "] " + msg + '\n';
+    std::cerr << s << std::endl;
+}
+
 GLFWwindow* setup(int width, int height, GLDEBUGPROC debugfun, GLFWframebuffersizefun resizefun, GLFWcursorposfun cursorfun) {
-    glfwInit();
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit()) {
+        std::cout << "Failed to initalize GLFW!" << std::endl;
+        return nullptr;
+    }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

@@ -51,4 +51,5 @@ public:
     void Update();
 
     TextureHandler& GetTextureHandler() const { return textureHandler; }
+    GLFWwindow* GetWindow() const { return window; }
 };

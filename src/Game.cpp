@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "util/FPSCounter.h"
 
 void Game::MouseCallback(const GLFWwindow* window, double xpos, double ypos) {
     if (firstMouse) // initially set to true
@@ -91,6 +92,7 @@ void Game::UpdateEvents() {
 Game::Game(GLFWwindow* win) 
     :textureHandler((char*)"pixelartattempt/textureatlas.png"),
     world(glm::vec3(0.0f, 0.0f, 3.0f), textureHandler),
+    fpsCounter(),
     player(glm::vec3(0.0f, 0.0f, 3.0f), world),
     renderer(win, player.GetCamera(), 800, 600, 45.0f, textureHandler),
     gui(renderer)
@@ -129,17 +131,8 @@ void Game::Run() {
         ProcessInput(window);
 
         world.UpdateChunks(player.GetPos());
-        // output how much fps we have
-        timeSum += deltaTime;
-        if (deltaTime > 0.1) {
-            std::cout << "HUGE time: " << deltaTime << std::endl;
-        }
-        frameCount++;
-        if (frameCount == 120) {
-            std::cout << 1.0f / (timeSum / 120.0f) << " FPS"<< std::endl;
-            frameCount = 0;
-            timeSum = 0.0f;
-        }
+
+        fpsCounter.tick(deltaTime);
 
         // Tick
         player.Tick();

@@ -9,10 +9,13 @@
 #include "player/Player.h"
 #include "world/World.h"
 #include "gfx/TextureHandler.h"
+#include "util/FPSCounter.h"
 
 class Game {
 private:
     GLFWwindow* window;
+
+    FPSCounter fpsCounter;
 
     float visibility;
     int width;
@@ -20,13 +23,13 @@ private:
 
     TextureHandler textureHandler;
 
-    GUI gui;
-
     World world;
 
     Player player;
 
     Renderer renderer;
+
+    GUI gui;
 
     float deltaTime;
     float lastFrame;
